@@ -5,7 +5,7 @@ local Logger = function(name, creator, loggerConfig)
     local patternBuilder = PatternBuilder(name, creator, loggerConfig)
 
     local writeToAppenders = function(logMessage)
-        for _, appender in ipairs(loggerConfig.appenders) do
+        for _, appender in pairs(loggerConfig.appenders) do
             appender.append(logMessage)
         end
     end 

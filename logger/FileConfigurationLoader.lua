@@ -1,4 +1,6 @@
-local load = load or loadstring
+require "logger.polyfills.loadstring"
+
+local LoggerConfigurationDsl = require "logger.LoggerConfigurationDsl"
 local LoggerFactory = require "logger.LoggerFactory"
 local StringUtils = require "logger.StringUtils"
 
@@ -6,7 +8,7 @@ local CONFIG_FILE_ENV_VAR = "LUA_LOG_CFG_FILE"
 local DEFAULT_CONFIG_FILE_PATH = "logger.lua.config"
 
 local executeConfigLoader = function(configLoader)
-    local fileConfig, configLoaderError = configLoader()
+    local fileConfig, configLoaderError = LoggerConfigurationDsl.buildConfigUsingLoaderDsl(configLoader)
 
     if not fileConfig or configLoaderError then
         error(
@@ -26,21 +28,20 @@ local executeConfigLoader = function(configLoader)
 end
 
 local buildConfigLoaderForFile = function(configFile)
-    local configFileLua = configFile:read("*all")
+    local configLua = configFile:read("*all")
 
     pcall(function() configFile:close() end)
     
-    local configLua = string.format("return %s", configFileLua)
-    local configLoader, luaLoadError = load(configLua)
+    local configLoader, luaLoadError = loadstring(configLua)
 
     if not configLoader or luaLoadError then
         error(
             string.format("Unable to parse logger config lua from file at path '%s': %s\nConfig Lua:\n%s",
-                configFilePath, luaLoadError or "unknown error occurred", configFileLua)
+                configFilePath, luaLoadError or "unknown error occurred", configLua)
         )
     end
 
-    return configLoader, configFileLua
+    return configLoader, configLua
 end
 
 local openConfigFile = function(configFilePath)
@@ -85,7 +86,7 @@ local loadConfigFromFile = function(postLoadConfigCallback)
     postLoadConfigCallback(fileConfig)
 
     LoggerFactory.getLogger("FileConfigurationLoader")
-        .debug("Loaded logger configuration from file at path '%s': \nConfiguration Lua:\n%s", configFilePath, configFileLua)
+        .debug("Loaded logger configuration from file at path '%s':\n%s", configFilePath, configFileLua)
 end
 
 return

@@ -1,4 +1,5 @@
-local load = load or loadstring
+require "logger.polyfills.loadstring"
+
 local LoggerFactory = require "logger.LoggerFactory"
 local StringUtils = require "logger.StringUtils"
 
@@ -13,9 +14,13 @@ local setConfig = function(config)
         error("nil argument 'config' passed to setConfig")
     end
 
-    for idx, appender in ipairs(config.appenders) do
-        config.appenders[idx] = require(appender)(config)
+    local appenders = {}
+
+    for appenderName, appenderConfig in pairs(config.appenders) do
+        appenders[appenderName] = require(appenderConfig.module)(appenderName, appenderConfig.config)
     end
+
+    config.appenders = appenders
 
     loggerConfig = config
 end
@@ -27,7 +32,13 @@ local initConfig = function(configFieldsToSet)
 
     local config = {
         pattern = DEFAULT_PATTERN,
-        appenders = {"logger.ConsoleAppender"}
+        appenders =
+        {
+            console =
+            {
+                module = "logger.ConsoleAppender"
+            }
+        }
     }
 
     for field, value in pairs(configFieldsToSet or {}) do
@@ -47,7 +58,7 @@ local executeConfigLoader = function()
     local configLoader = envConfigLoader or DEFAULT_CONFIG_LOADER
     local configLoaderLua = string.format("return require('%s')", configLoader)
 
-    local getConfigLoader, loadError = load(configLoaderLua)
+    local getConfigLoader, loadError = loadstring(configLoaderLua)
 
     if not getConfigLoader or loadError then
         error(loadError or "unknown error occurred")
