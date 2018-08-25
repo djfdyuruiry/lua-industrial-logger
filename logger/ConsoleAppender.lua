@@ -1,3 +1,4 @@
+local AnsiDecoratedStringBuilder = require "logger.AnsiDecoratedStringBuilder"
 local StringUtils = require "logger.StringUtils"
 
 local ConsoleAppender = function(name, appenderConfig)
@@ -24,6 +25,14 @@ local ConsoleAppender = function(name, appenderConfig)
     return
     {
         append = function(logMessage)
+            if config.colours then
+                logMessage = AnsiDecoratedStringBuilder(logMessage)
+                    .modifier(config.colours.modifier)
+                    .foregroundColour(config.colours.foregroundColour)
+                    .backgroundColour(config.colours.backgroundColour)
+                    .build()
+            end
+
             outputStream:write(logMessage)
             outputStream:write("\r\n")
         end
