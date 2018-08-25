@@ -41,8 +41,10 @@ local initConfig = function(configFieldsToSet)
         }
     }
 
-    for field, value in pairs(configFieldsToSet or {}) do
-        config[field] = value
+    if configFieldsToSet then
+        for field, value in pairs(configFieldsToSet) do
+            config[field] = value
+        end
     end
 
     setConfig(config)
@@ -72,9 +74,9 @@ local initConfigIfNeeded = function()
         return
     end
 
-    local configLoaded, loadError = xpcall(executeConfigLoader, debug.traceback)
+    local _, loadError = xpcall(executeConfigLoader, debug.traceback)
 
-    if configLoaded then
+    if loggerConfig then
         return
     end
 

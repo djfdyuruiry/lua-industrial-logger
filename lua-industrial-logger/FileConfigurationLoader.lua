@@ -5,7 +5,7 @@ local LoggerFactory = require "lua-industrial-logger.LoggerFactory"
 local StringUtils = require "lua-industrial-logger.StringUtils"
 
 local CONFIG_FILE_ENV_VAR = "LUA_LOG_CFG_FILE"
-local DEFAULT_CONFIG_FILE_PATH = "lua-industrial-logger.lua.config"
+local DEFAULT_CONFIG_FILE_PATH = "logger.lua.config"
 
 local executeConfigLoader = function(configLoader)
     local fileConfig, configLoaderError = LoggerConfigurationDsl.buildConfigUsingLoaderDsl(configLoader)
