@@ -3,6 +3,7 @@ local StringUtils = require "logger.StringUtils"
 
 local ConsoleAppender = function(name, appenderConfig)
     local config = appenderConfig or {}
+    local colourConfig = config.colours
     local outputStream
 
     local loadConfig = function()
@@ -25,11 +26,11 @@ local ConsoleAppender = function(name, appenderConfig)
     return
     {
         append = function(logMessage)
-            if config.colours then
+            if colourConfig then
                 logMessage = AnsiDecoratedStringBuilder(logMessage)
-                    .modifier(config.colours.modifier)
-                    .foregroundColour(config.colours.foregroundColour)
-                    .backgroundColour(config.colours.backgroundColour)
+                    .modifier(colourConfig.format)
+                    .foregroundColour(colourConfig.foreground)
+                    .backgroundColour(colourConfig.background)
                     .build()
             end
 
