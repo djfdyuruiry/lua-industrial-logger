@@ -18,8 +18,5 @@ dependencies = {
 }
 build = {
     type = "builtin",
-    modules = {
-        ["lua-industrial-logger"] = "logger/*"
-    },
-    copy_directories = {}
+    copy_directories = {"lua-industrial-logger"}
 }
