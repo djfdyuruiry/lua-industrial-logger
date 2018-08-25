@@ -1,5 +1,5 @@
-local AnsiDecoratedStringBuilder = require "logger.AnsiDecoratedStringBuilder"
-local StringUtils = require "logger.StringUtils"
+local AnsiDecoratedStringBuilder = require "lua-industrial-logger.AnsiDecoratedStringBuilder"
+local StringUtils = require "lua-industrial-logger.StringUtils"
 
 local ConsoleAppender = function(name, appenderConfig)
     local config = appenderConfig or {}

@@ -1,4 +1,4 @@
-local ThreadUtils = require("logger.ThreadUtils")
+local ThreadUtils = require("lua-industrial-logger.ThreadUtils")
 
 local PATTERN_GENERATOR_MAP = 
 {

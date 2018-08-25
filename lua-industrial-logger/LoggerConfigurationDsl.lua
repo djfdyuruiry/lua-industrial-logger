@@ -1,4 +1,4 @@
-require "logger.polyfills.setfenv"
+require "lua-industrial-logger.polyfills.setfenv"
 
 local appenderCreator = function(config, defaultName, module)
     return function(name)
@@ -47,8 +47,8 @@ local buildConfigUsingLoaderDsl = function(loaderFunction)
         appender = function(module)
             return appenderCreator(config, module)
         end,
-        console = appenderCreator(config, "console", "logger.ConsoleAppender"),
-        file = appenderCreator(config, "file", "logger.FileAppender")
+        console = appenderCreator(config, "console", "lua-industrial-logger.ConsoleAppender"),
+        file = appenderCreator(config, "file", "lua-industrial-logger.FileAppender")
     })
 
     local _, err = loaderFunction()

@@ -1,5 +1,5 @@
-local Levels = require "logger.Levels"
-local PatternBuilder = require "logger.PatternBuilder"
+local Levels = require "lua-industrial-logger.Levels"
+local PatternBuilder = require "lua-industrial-logger.PatternBuilder"
 
 local Logger = function(name, creator, loggerConfig)
     local patternBuilder = PatternBuilder(name, creator, loggerConfig)

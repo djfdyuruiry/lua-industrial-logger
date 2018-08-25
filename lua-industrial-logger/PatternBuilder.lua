@@ -1,5 +1,5 @@
-local PatternGeneratorMap = require("logger.PatternGeneratorMap")
-local StringUtils = require ("logger.StringUtils")
+local PatternGeneratorMap = require("lua-industrial-logger.PatternGeneratorMap")
+local StringUtils = require ("lua-industrial-logger.StringUtils")
 
 local PatternBuilder = function(loggerName, creator, loggerConfig)
     local buildLogMessageFromPattern = function (level, message)

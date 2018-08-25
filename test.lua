@@ -1,5 +1,5 @@
 #! /usr/bin/env lua
-local LoggerFactory = require "logger.LoggerFactory"
+local LoggerFactory = require "lua-industrial-logger.LoggerFactory"
 
 local logger = LoggerFactory.getLogger("test.lua")
 
