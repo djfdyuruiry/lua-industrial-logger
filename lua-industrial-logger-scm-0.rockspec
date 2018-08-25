@@ -1,5 +1,5 @@
 package = "lua-industrial-logger"
-version = "0.1-scm"
+version = "scm-0"
 source = {
     url = "git://github.com/djfdyuruiry/lua-industrual-strength-logging.git",
     tag = "master"
