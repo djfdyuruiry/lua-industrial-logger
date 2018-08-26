@@ -40,6 +40,8 @@ local Logger = function(name, creator, loggerConfig)
             if not filterStatus then
                 error(("Error applying filter in config '%s': %s"):format(configName, filterError))
             end
+        elseif type(config.level) == "number" then
+            levelAccepted = (levelAccepted == nil and true or levelAccepted) and level == config.level
         else
             if type(config.minLevel) == "number" then
                 levelAccepted = (levelAccepted == nil and true or levelAccepted) and level >= config.minLevel
@@ -71,7 +73,7 @@ local Logger = function(name, creator, loggerConfig)
 
                 local message = buildLogMessageFromAppenderPattern(appender, level, formattedMessage) or defaultPatternMessage
 
-                appender.append(message)
+                appender.append(level:upper(), message)
             end
         end
     end 

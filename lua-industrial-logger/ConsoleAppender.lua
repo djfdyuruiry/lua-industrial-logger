@@ -3,7 +3,6 @@ local StringUtils = require "lua-industrial-logger.StringUtils"
 
 local ConsoleAppender = function(name, appenderConfig)
     local config = appenderConfig or {}
-    local colourConfig = config.colours
     local outputStream
 
     local validateConfig = function()
@@ -23,8 +22,14 @@ local ConsoleAppender = function(name, appenderConfig)
 
     validateConfig()
 
-    local append = function(logMessage)
+    local append = function(level, logMessage)
+        local colourConfig = config.colours
+
         if colourConfig then
+            if type(colourConfig.forLevels) == "table" then
+                colourConfig = colourConfig.forLevels[level]
+            end
+
             logMessage = AnsiDecoratedStringBuilder(logMessage)
                 .modifier(colourConfig.format)
                 .foregroundColour(colourConfig.foreground)

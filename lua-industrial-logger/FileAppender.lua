@@ -25,7 +25,7 @@ local FileAppender = function(name, config)
 
     validateConfig()
 
-    local append = function(logMessage)
+    local append = function(level, logMessage)
         if config.createMissingDirectories
           and not logDirectoryCreated
           and not OsUtils.directoryExists(logFileDirectory) then
