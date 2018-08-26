@@ -36,12 +36,6 @@ local configPropertySetter = function(config, propertyName)
     end
 end
 
-local logLevelSetter = function(config, propertyName)
-    return function(level)
-        config[propertyName] = Levels.parse(level)
-    end
-end
-
 local syntaxSugar = function() end
 
 local buildConfigUsingLoaderDsl = function(loaderFunction)
@@ -49,8 +43,8 @@ local buildConfigUsingLoaderDsl = function(loaderFunction)
     local dslEnv = {
         config = syntaxSugar,
         pattern = configPropertySetter(config, "pattern"),
-        minLevel = logLevelSetter(config, "minLevel"),
-        maxLevel = logLevelSetter(config, "maxLevel"),
+        minLevel = configPropertySetter(config, "minLevel"),
+        maxLevel = configPropertySetter(config, "maxLevel"),
         filter = configPropertySetter(config, "filter"),
         appenders = runAppenderGenerators,
         appender = function(module)

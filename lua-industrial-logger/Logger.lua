@@ -25,7 +25,7 @@ local Logger = function(name, creator, loggerConfig)
         return formattedMessage
     end
 
-    local logLevelAccepted = function(config, configName, level)
+    local isLogLevelAccepted = function(config, configName, level)
         if type(config) ~= "table" then
             return nil
         end
@@ -55,11 +55,11 @@ local Logger = function(name, creator, loggerConfig)
 
     local writeToAppenders = function(level, logMessage, ...)
         local levelValue = Levels.parse(level)
-        local configAcceptedLevel = logLevelAccepted(loggerConfig, "loggerConfig", levelValue)
+        local configAcceptedLevel = isLogLevelAccepted(loggerConfig, "loggerConfig", levelValue)
         local formattedMessage, defaultPatternMessage 
 
         for appenderName, appender in pairs(loggerConfig.appenders) do
-            local appenderAcceptedLevel = logLevelAccepted(appender.config, appenderName, levelValue)
+            local appenderAcceptedLevel = isLogLevelAccepted(appender.config, appenderName, levelValue)
 
             if appenderAcceptedLevel == nil then
                 appenderAcceptedLevel = configAcceptedLevel
