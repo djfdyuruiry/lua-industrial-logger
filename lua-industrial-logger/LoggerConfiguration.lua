@@ -32,6 +32,7 @@ local initConfig = function(configFieldsToSet)
 
     local config = {
         pattern = DEFAULT_PATTERN,
+        appendNewlines = true,
         appenders =
         {
             console =

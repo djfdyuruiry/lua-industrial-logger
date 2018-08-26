@@ -35,7 +35,6 @@ local ConsoleAppender = function(name, appenderConfig)
             end
 
             outputStream:write(logMessage)
-            outputStream:write("\r\n")
         end
     }
 end

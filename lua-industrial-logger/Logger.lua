@@ -13,6 +13,10 @@ local Logger = function(name, creator, loggerConfig)
     local log = function(level, message, ...)
         local formattedMessage = string.format(message, ...):gsub("%%", "%%%%")
 
+        if loggerConfig.appendNewlines then
+            formattedMessage = formattedMessage .. "\n"
+        end
+
         writeToAppenders(
             patternBuilder.buildLogMessageFromPattern(level, formattedMessage)
         )
@@ -21,6 +25,10 @@ local Logger = function(name, creator, loggerConfig)
     local logError = function(level, message, err, ...)
         local formattedMessage = string.format(message, ...):gsub("%%", "%%%%")
     
+        if loggerConfig.appendNewlines then
+            formattedMessage = formattedMessage .. "\n"
+        end
+
         writeToAppenders(
             patternBuilder.buildLogMessageFromPattern(level, formattedMessage)
         )

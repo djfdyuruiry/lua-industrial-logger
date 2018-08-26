@@ -2,6 +2,7 @@ require "lua-industrial-logger.polyfills.loadstring"
 
 local LoggerConfigurationDsl = require "lua-industrial-logger.LoggerConfigurationDsl"
 local LoggerFactory = require "lua-industrial-logger.LoggerFactory"
+local FileUtils = require "lua-industrial-logger.FileUtils"
 local StringUtils = require "lua-industrial-logger.StringUtils"
 
 local CONFIG_FILE_ENV_VAR = "LUA_LOG_CFG_FILE"
@@ -45,11 +46,11 @@ local buildConfigLoaderForFile = function(configFile)
 end
 
 local openConfigFile = function(configFilePath)
-    local configFile, configFileError = io.open(configFilePath)
-
-    if configFileError and configFilePath == DEFAULT_CONFIG_FILE_PATH then
+    if not FileUtils.fileExists(configFilePath) and configFilePath == DEFAULT_CONFIG_FILE_PATH then
         return true
     end
+
+    local configFile, configFileError = io.open(configFilePath)
     
     if not configFile or configFileError then
         error(string.format("Unable to load logger config from file at path '%s': %s", configFilePath, configFileError))
