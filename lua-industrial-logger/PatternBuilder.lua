@@ -1,9 +1,9 @@
 local PatternGeneratorMap = require("lua-industrial-logger.PatternGeneratorMap")
 local StringUtils = require ("lua-industrial-logger.StringUtils")
 
-local PatternBuilder = function(loggerName, creator, loggerConfig)
-    local buildLogMessageFromPattern = function (level, message)
-        local logMessage = loggerConfig.pattern
+local PatternBuilder = function(loggerName, creator)
+    local buildLogMessageFromPattern = function (pattern, level, message)
+        local logMessage = pattern
 
         for pattern, replacementGenerator in pairs(PatternGeneratorMap) do
             logMessage = StringUtils.replacePatternIfPresent(

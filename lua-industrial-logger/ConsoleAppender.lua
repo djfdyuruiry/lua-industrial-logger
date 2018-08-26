@@ -6,7 +6,7 @@ local ConsoleAppender = function(name, appenderConfig)
     local colourConfig = config.colours
     local outputStream
 
-    local loadConfig = function()
+    local validateConfig = function()
         local outputStreamName = not StringUtils.isBlank(config.stream) and config.stream or "stdout"
 
         outputStream = io[outputStreamName]
@@ -21,21 +21,24 @@ local ConsoleAppender = function(name, appenderConfig)
         end
     end
 
-    loadConfig()
+    validateConfig()
 
+    local append = function(logMessage)
+        if colourConfig then
+            logMessage = AnsiDecoratedStringBuilder(logMessage)
+                .modifier(colourConfig.format)
+                .foregroundColour(colourConfig.foreground)
+                .backgroundColour(colourConfig.background)
+                .build()
+        end
+
+        outputStream:write(logMessage)
+    end
+    
     return
     {
-        append = function(logMessage)
-            if colourConfig then
-                logMessage = AnsiDecoratedStringBuilder(logMessage)
-                    .modifier(colourConfig.format)
-                    .foregroundColour(colourConfig.foreground)
-                    .backgroundColour(colourConfig.background)
-                    .build()
-            end
-
-            outputStream:write(logMessage)
-        end
+        append = append,
+        config = config
     }
 end
 

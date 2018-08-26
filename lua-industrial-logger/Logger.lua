@@ -2,40 +2,36 @@ local Levels = require "lua-industrial-logger.Levels"
 local PatternBuilder = require "lua-industrial-logger.PatternBuilder"
 
 local Logger = function(name, creator, loggerConfig)
-    local patternBuilder = PatternBuilder(name, creator, loggerConfig)
+    local patternBuilder = PatternBuilder(name, creator)
+    local defaultPattern = loggerConfig.pattern
 
-    local writeToAppenders = function(logMessage)
-        for _, appender in pairs(loggerConfig.appenders) do
-            appender.append(logMessage)
-        end
-    end 
-
-    local log = function(level, message, ...)
-        local formattedMessage = string.format(message, ...):gsub("%%", "%%%%")
-
-        if loggerConfig.appendNewlines then
-            formattedMessage = formattedMessage .. "\n"
-        end
-
-        writeToAppenders(
-            patternBuilder.buildLogMessageFromPattern(level, formattedMessage)
-        )
-    end
-
-    local logError = function(level, message, err, ...)
-        local formattedMessage = string.format(message, ...):gsub("%%", "%%%%")
+    local writeToAppenders = function(level, logMessage, ...)
+        local formattedMessage = string.format(logMessage, ...):gsub("%%", "%%%%")
     
         if loggerConfig.appendNewlines then
             formattedMessage = formattedMessage .. "\n"
         end
 
-        writeToAppenders(
-            patternBuilder.buildLogMessageFromPattern(level, formattedMessage)
-        )
+        local defaultPatternMessage = patternBuilder.buildLogMessageFromPattern(defaultPattern, level, formattedMessage)
 
-        writeToAppenders(
-            patternBuilder.buildLogMessageFromPattern(level, err)
-        )
+        for _, appender in pairs(loggerConfig.appenders) do
+            local message = defaultPatternMessage
+
+            if type(appender.config) == "table" and appender.config.pattern then
+                message = patternBuilder.buildLogMessageFromPattern(appender.config.pattern, level, formattedMessage)
+            end
+
+            appender.append(message)
+        end
+    end 
+
+    local log = function(level, message, ...)
+        writeToAppenders(level, message, ...)
+    end
+
+    local logError = function(level, message, err, ...)
+        writeToAppenders(level, message, ...)
+        writeToAppenders(level, err, ...)
     end
 
     return setmetatable(
