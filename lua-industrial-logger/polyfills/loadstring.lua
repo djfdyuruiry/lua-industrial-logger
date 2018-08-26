@@ -1,1 +1,1 @@
-_G.loadstring = _G.loadstring or _G.load
+return _G.loadstring or _G.load

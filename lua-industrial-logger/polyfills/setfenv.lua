@@ -1,4 +1,4 @@
-_G.setfenv = _G.setfenv or function(fn, env)
+return _G.setfenv or function(fn, env)
     local i = 1
 
     while true do

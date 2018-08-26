@@ -1,4 +1,4 @@
-require "lua-industrial-logger.polyfills.loadstring"
+local loadstring = require "lua-industrial-logger.polyfills.loadstring"
 
 local LoggerConfigurationDsl = require "lua-industrial-logger.LoggerConfigurationDsl"
 local LoggerFactory = require "lua-industrial-logger.LoggerFactory"

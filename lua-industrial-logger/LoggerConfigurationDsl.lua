@@ -1,4 +1,4 @@
-require "lua-industrial-logger.polyfills.setfenv"
+local setfenv = require "lua-industrial-logger.polyfills.setfenv"
 
 local Levels = require "lua-industrial-logger.Levels"
 
