@@ -38,7 +38,7 @@ local Logger = function(name, creator, loggerConfig)
             end, debug.traceback)
 
             if not filterStatus then
-                io.error:write(("Error applying filter '%s': %s"):format(configName, filterError))
+                error(("Error applying filter in config '%s': %s"):format(configName, filterError))
             end
         else
             if type(config.minLevel) == "number" then
