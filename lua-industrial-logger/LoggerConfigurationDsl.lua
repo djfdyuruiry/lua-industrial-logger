@@ -38,7 +38,7 @@ end
 
 local logLevelSetter = function(config, propertyName)
     return function(level)
-        config[propertyName] = Levels[level:upper()]
+        config[propertyName] = Levels.parse(level)
     end
 end
 

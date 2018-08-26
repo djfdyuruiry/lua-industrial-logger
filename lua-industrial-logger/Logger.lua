@@ -25,15 +25,9 @@ local Logger = function(name, creator, loggerConfig)
         return formattedMessage
     end
 
-    local logLevelAcceptedByAppender = function(appender, level)
-
-        
-        return false
-    end
-
     local logLevelAccepted = function(config, configName, level)
         if type(config) ~= "table" then
-            return false
+            return nil
         end
 
         local levelAccepted = nil
@@ -56,17 +50,22 @@ local Logger = function(name, creator, loggerConfig)
             end
         end
         
-        return (levelAccepted == nil and false or levelAccepted)
+        return levelAccepted
     end
 
     local writeToAppenders = function(level, logMessage, ...)
-        local formattedMessage
-        local defaultPatternMessage 
-        local levelValue = Levels[level:upper()]
+        local levelValue = Levels.parse(level)
+        local configAcceptedLevel = logLevelAccepted(loggerConfig, "loggerConfig", levelValue)
+        local formattedMessage, defaultPatternMessage 
 
         for appenderName, appender in pairs(loggerConfig.appenders) do
-            if logLevelAccepted(loggerConfig, "loggerConfig", levelValue)
-                or logLevelAccepted(appender.config, appenderName, levelValue) then
+            local appenderAcceptedLevel = logLevelAccepted(appender.config, appenderName, levelValue)
+
+            if appenderAcceptedLevel == nil then
+                appenderAcceptedLevel = configAcceptedLevel
+            end
+
+            if appenderAcceptedLevel then
                 formattedMessage = formattedMessage or formatMessage(logMessage, ...)
                 defaultPatternMessage = defaultPatternMessage or buildLogMessageWithPattern(level, formattedMessage)
 
@@ -92,13 +91,15 @@ local Logger = function(name, creator, loggerConfig)
             logError = logError
         },
         {
-            __index = function(self, index)
-                if type(index) ~= "string" or index:lower() == "off" or not Levels[index:upper()] then
+            __index = function(self, level)
+                Levels.parse(level)
+
+                if level:lower() == "off" then
                     return nil
                 end
 
                 return function (message, ...)
-                    log(index, message, ...)
+                    log(level, message, ...)
                 end
             end
         }
