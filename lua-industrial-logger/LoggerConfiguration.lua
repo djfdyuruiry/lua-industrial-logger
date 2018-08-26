@@ -1,5 +1,6 @@
 require "lua-industrial-logger.polyfills.loadstring"
 
+local Levels = require "lua-industrial-logger.Levels"
 local LoggerFactory = require "lua-industrial-logger.LoggerFactory"
 local StringUtils = require "lua-industrial-logger.StringUtils"
 
@@ -33,6 +34,7 @@ local initConfig = function(configFieldsToSet)
     local config = {
         pattern = DEFAULT_PATTERN,
         appendNewlines = true,
+        maxLevel = Levels.TRACE,
         appenders =
         {
             console =
