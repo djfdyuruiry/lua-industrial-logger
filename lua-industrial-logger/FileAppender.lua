@@ -8,7 +8,7 @@ local FileAppender = function(name, config)
 
     local validateConfig = function()
         if type(config) ~= "table" then
-            error(("Configuration table not supplied for FileAppender '%s'"):format(name))
+            error(("configuration table not supplied for FileAppender '%s'"):format(name))
         end
 
         if StringUtils.isBlank(config.logFilePath) then
@@ -18,7 +18,7 @@ local FileAppender = function(name, config)
         logFileDirectory = FileUtils.getFileDirectory(config.logFilePath)
 
         if not config.createMissingDirectories and not OsUtils.directoryExists(logFileDirectory) then
-            error(("Directory '%s' in 'logFilePath' for FileAppender '%s' is missing " ..
+            error(("directory '%s' in 'logFilePath' for FileAppender '%s' is missing " ..
                 "(set 'createMissingDirectories = true' to automatically create it)"):format(logFileDirectory, name))
         end
     end
@@ -39,7 +39,8 @@ local FileAppender = function(name, config)
     return
     {
         append = append,
-        config = config
+        config = config,
+        logFileDirectory = logFileDirectory
     }
 end
 

@@ -43,10 +43,14 @@ local getFileDirectory = function(filePath)
     local lastSeperatorIndex = filePath:match(LAST_SEPERATOR_REGEX)
 
     if not lastSeperatorIndex then
-        return "./"
+        return string.format(".%s", DIRECTORY_SEPERATOR)
     end
 
     return filePath:sub(0, lastSeperatorIndex)
+end
+
+local combinePaths = function(left, right)
+    return string.format("%s%s%s", left, DIRECTORY_SEPERATOR, right)
 end
 
 return
@@ -55,5 +59,6 @@ return
     appendTextToFile = appendTextToFile,
     getFileSizeInBytes = getFileSizeInBytes,
     fileExists = fileExists,
-    getFileDirectory = getFileDirectory
+    getFileDirectory = getFileDirectory,
+    combinePaths = combinePaths
 }

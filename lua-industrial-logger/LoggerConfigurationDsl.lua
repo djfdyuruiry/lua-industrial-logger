@@ -51,7 +51,8 @@ local buildConfigUsingLoaderDsl = function(loaderFunction)
             return appenderCreator(config, module)
         end,
         console = appenderCreator(config, "console", "lua-industrial-logger.ConsoleAppender"),
-        file = appenderCreator(config, "file", "lua-industrial-logger.FileAppender")
+        file = appenderCreator(config, "file", "lua-industrial-logger.FileAppender"),
+        rollingFile = appenderCreator(config, "rollingFile", "lua-industrial-logger.RollingFileAppender")
     }
 
     for level, levelAsInt in pairs(Levels) do

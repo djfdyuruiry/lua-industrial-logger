@@ -19,7 +19,7 @@ end
 
 local assertCommandAvailable = function(command)
     assert(
-        os.execute(("command -v %s %s"):format(command, REDIRECT_OUTPUT)), 
+        os.execute(("command -v %s %s"):format(command, getOutputRedirectString(true))), 
         ("unable to find 'tar' command"):format(command)
     )
 end
@@ -31,7 +31,7 @@ local getUnixZipCompressionUtil = function()
         local removeFilesFlag = removeFiles and "m" or ""
 
         assert(
-            os.execute(("zip -%s9 '%s' '%s' %s"):format(removeFilesFlag, archiveName, file, getOutputRedirectString())), 
+            os.execute(("zip -%s9 '%s.zip' '%s' %s"):format(removeFilesFlag, archiveName, file, getOutputRedirectString())), 
             ("error creating zip archive '%s' for file '%s'"):format(archiveName, file)
         )
     end
@@ -44,7 +44,7 @@ local getUnixTarCompressionUtil = function()
         local removeFilesFlag = removeFiles and "--remove-files" or ""
 
         assert(
-            os.execute(("env GZIP=-9 tar -czf '%s.gz.tar' '%s' %s %s"):format(archiveName, file, removeFilesFlag, getOutputRedirectString())), 
+            os.execute(("env GZIP=-9 tar -czf '%s.gz.tar' '%s' %s %s"):format(archiveName, file, removeFilesFlag, getOutputRedirectString(true))), 
             ("error creating tar archive '%s' for file '%s'"):format(archiveName, file)
         )
     end
@@ -72,6 +72,14 @@ local compressFilePath = function(filePath, archiveName, removeFiles, compressio
     compressionUtil(filePath, archiveName, removeFiles)
 end
 
+local getSupportedCompressionFormats = function()
+    if osIsUnixLike() then
+        return {tar = true, zip = true}
+    end
+
+    return {}
+end
+
 local directoryExists = function(directoryPath)
     local commandStatus, _, exitCode = os.execute(([[cd "%s" %s]]):format(directoryPath, getOutputRedirectString(true)))
 
@@ -97,6 +105,7 @@ return
     assertCommandAvailable = assertCommandAvailable,
     getCompressionUtil = getCompressionUtil,
     compressFilePath = compressFilePath,
+    getSupportedCompressionFormats = getSupportedCompressionFormats,
     directoryExists = directoryExists,
     createDirectory = createDirectory
 }
