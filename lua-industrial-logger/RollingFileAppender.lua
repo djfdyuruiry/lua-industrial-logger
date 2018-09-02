@@ -1,3 +1,4 @@
+local DebugLogger = require "lua-industrial-logger.DebugLogger"
 local FileAppender = require "lua-industrial-logger.FileAppender"
 local FileUtils = require "lua-industrial-logger.FileUtils"
 local OsUtils = require "lua-industrial-logger.OsUtils"
@@ -9,7 +10,6 @@ local RollingFileAppender = function(name, appenderConfig)
     local rolloverConfig = appenderConfig.rollover
     local maxLogFileSizeInBytes
     local backupFileFormat
-    local backupFilePattern
     local maxBackupFiles
 
     local validateConfig = function()
@@ -38,18 +38,6 @@ local RollingFileAppender = function(name, appenderConfig)
             backupFileFormat = potentialFormat
         end
 
-        if StringUtils.isBlank(type(rolloverConfig.backupFilePattern)) then
-            error(("'backupFilePattern' specified for RollingFileAppender '%s' is missing/blank"):format(name))
-        end
-
-        local dateOk, dateError = xpcall(function()
-            os.date(rolloverConfig.backupFilePattern)
-        end, debug.traceback, rolloverConfig.backupFilePattern)
-
-        if not dateOk then
-            error(("'backupFilePattern' specified for RollingFileAppender '%s' is invalid: %s"):format(name, dateError or "unknown error"))
-        end
-
         if type(rolloverConfig.maxBackupFiles) ~= "number" then
             error(("'maxBackupFiles' is not a number or is missing for RollingFileAppender '%s'"):format(name)) 
         elseif rolloverConfig.maxBackupFiles < 1 then
@@ -57,19 +45,52 @@ local RollingFileAppender = function(name, appenderConfig)
         end
 
         maxLogFileSizeInBytes = rolloverConfig.maxFileSizeInKb * 1000
-        backupFilePattern = rolloverConfig.backupFilePattern
         maxBackupFiles = rolloverConfig.maxBackupFiles
     end
 
     validateConfig()
 
-    local rolloverLogFiles = function()
-        local backupFileName = os.date(backupFilePattern)
-        local backupFilePath = FileUtils.combinePaths(fileAppender.logFileDirectory, backupFileName)
+    local buildBackupFilePath = function(backupIndex)
+        local backupFileName = StringUtils.concat(logFilePath, "-", backupIndex)
+
+        return FileUtils.combinePaths(fileAppender.logFileDirectory, backupFileName)
+    end
+
+    local getNextBackupFileIndex = function()
+        for idx = 1, maxBackupFilePath do
+            local backupFilePath = buildBackupFilePath(idx)
+
+            if not FileUtils.fileExists(backupFile) then
+                DebugLogger.log("Next backup file index: %d", idx)
+                return idx
+            end
+        end
+    end
+
+    local rolloverLogBackups = function(maxBackupFilePath)
+        FileUtils.deleteFile(maxBackupFilePath)
+
+        for idx = maxBackupFiles - 1, 1, -1 do
+            local backupFilePath = buildBackupFilePath(idx)
+
+            if FileUtils.fileExists(backupFile) then
+                local newBackupFilePath = buildBackupFilePath(idx + 1)
+
+                OsUtils.moveFile(backupFilePath, newBackupFilePath)
+            end
+        end
+    end
+
+    local rolloverLogFile = function()
+        local maxBackupFilePath = buildBackupFilePath(maxBackupFiles)
+
+        if FileUtils.fileExists(maxBackupFilePath) then
+            rolloverLogBackups(maxBackupFilePath)
+        end
+
+        local backupFilePath = buildBackupFilePath(getNextBackupFileIndex())
 
         OsUtils.compressFilePath(logFilePath, backupFilePath, true, backupFileFormat)
-
-        -- TODO: max backups logic
     end
 
     local append = function(level, message)
@@ -78,7 +99,7 @@ local RollingFileAppender = function(name, appenderConfig)
         local fileSizeInBytes = FileUtils.getFileSizeInBytes(logFilePath)
 
         if fileSizeInBytes > maxLogFileSizeInBytes then
-            rolloverLogFiles()
+            rolloverLogFile()
         end
     end
 

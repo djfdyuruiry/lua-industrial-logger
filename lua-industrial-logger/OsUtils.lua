@@ -1,3 +1,5 @@
+local StringUtils = require "lua-industrial-logger.StringUtils"
+
 local DIRECTORY_SEPERATOR = package.config:sub(1, 1)
 local DEFAULT_COMPRESSION_FORMAT = "tar"
 local REDIRECT_OUTPUT = "> %s"
@@ -99,6 +101,66 @@ local createDirectory = function(directoryPath)
     )
 end
 
+local getFileModificationTimeCommand = function(filePath)
+    if osIsUnixLike() then
+        return ([[date -r "%s" +%%s]]):format(filePath)
+    end
+
+    return ([[for %%f in ("%s") do @echo %%~tf]]):format(filePath)
+end
+
+local getFileModificationTime = function(filePath)getFileModificationTimeCommand(filePath)
+    local modificationTimeCommand = getFileModificationTimeCommand(filePath)
+    local dateProc, err = io.popen(modificationTimeCommand)
+
+    if not dateProc or err then
+        error(("Error getting modification time for file '%s': %s"):format(filePath, err or "unknown error"))
+    end
+
+    local utcTimestamp = dateProc:read("*a")
+
+    pcall(function()
+        dateProc:close()
+    end)
+
+    return StringUtils.trim(utcTimestamp)
+end
+
+local getFileListingCommand = function(directoryPath, filePattern)
+    if osIsUnixLike() then
+        return ([[echo "%s"/%s]]):format(directoryPath, filePattern)
+    end
+
+    return ([[for %%f in ("%s\%s") do @echo | set /p=%%f]]):format(directoryPath, filePattern)
+end
+
+local getFilesForPattern = function(directoryPath, filePattern)
+    local fileListingCommand = getFileListingCommand(directoryPath, filePattern)
+    local listProc, err = io.popen(fileListingCommand)
+
+    if not listProc or err then
+        error(("Error listing files in directory '%s' using pattern '%s': %s"):format(directoryPath, filePattern, err or "unknown error"))
+    end
+
+    local filesString = listProc:read("*a")
+
+    return StringUtils.explodeString(filesString, "%S+")
+end
+
+local getMoveFileCommand = function()
+    if osIsUnixLike() then
+        return [[mv -f "%s" "%s"]]
+    else
+        return [[move /Y "%s" "%s"]]
+    end
+end
+
+local moveFile = function(originalFilePath, newFilePath)
+    local moveFileCommand = getMoveFileCommand():format(originalFilePath, newFilePath)
+    
+    assert(os.execute(moveFileCommand))
+end
+
 return
 {
     osIsUnixLike = osIsUnixLike,
@@ -107,5 +169,8 @@ return
     compressFilePath = compressFilePath,
     getSupportedCompressionFormats = getSupportedCompressionFormats,
     directoryExists = directoryExists,
-    createDirectory = createDirectory
+    createDirectory = createDirectory,
+    getFileModificationTime = getFileModificationTime,
+    getFilesForPattern = getFilesForPattern,
+    moveFile = moveFile
 }

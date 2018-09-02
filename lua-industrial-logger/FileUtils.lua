@@ -53,6 +53,10 @@ local combinePaths = function(left, right)
     return string.format("%s%s%s", left, DIRECTORY_SEPERATOR, right)
 end
 
+local deleteFile = function(filePath)
+    assert(os.remove(filePath))
+end
+
 return
 {
     useFile = useFile,
@@ -60,5 +64,6 @@ return
     getFileSizeInBytes = getFileSizeInBytes,
     fileExists = fileExists,
     getFileDirectory = getFileDirectory,
-    combinePaths = combinePaths
+    combinePaths = combinePaths,
+    deleteFile = deleteFile
 }

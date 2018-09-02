@@ -1,5 +1,6 @@
 local loadstring = require "lua-industrial-logger.polyfills.loadstring"
 
+local DebugLogger = require "lua-industrial-logger.DebugLogger"
 local Levels = require "lua-industrial-logger.Levels"
 local LoggerFactory = require "lua-industrial-logger.LoggerFactory"
 local StringUtils = require "lua-industrial-logger.StringUtils"
@@ -18,6 +19,8 @@ local setConfig = function(config)
     local appenders = {}
 
     for appenderName, appenderConfig in pairs(config.appenders) do
+        DebugLogger.log("Loading appender with name = '%s' and type = '%s'", appenderName, appenderConfig.module)
+
         appenders[appenderName] = require(appenderConfig.module)(appenderName, appenderConfig.config)
     end
 
@@ -46,6 +49,8 @@ local initConfig = function(configFieldsToSet)
 
     if configFieldsToSet then
         for field, value in pairs(configFieldsToSet) do
+            DebugLogger.log("Setting logger config field with name = '%s' and value = '%s'", field, tostring(value))
+
             config[field] = value
         end
     end
@@ -62,6 +67,8 @@ local executeConfigLoader = function()
 
     local configLoader = envConfigLoader or DEFAULT_CONFIG_LOADER
     local configLoaderLua = string.format("return require('%s')", configLoader)
+
+    DebugLogger.log("Loading configuration with configLoaderLua = '%s'", configLoaderLua)
 
     local getConfigLoader, loadError = loadstring(configLoaderLua)
 
