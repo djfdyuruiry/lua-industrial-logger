@@ -1,3 +1,5 @@
+local DebugLogger = require "lua-industrial-logger.DebugLogger"
+
 local CODE_MAP = 
 {
     reset = 0,
@@ -27,10 +29,13 @@ local CODE_MAP =
 local BACKGROUND_OFFSET = 10
 
 local buildAnsiCodeString = function(code)
+    DebugLogger.log("building ansi string with code = '%s'", code)
     return string.format("%s[%dm", string.char(27), code)
 end
 
 local AnsiDecoratedStringBuilder = function(subjectString)
+    DebugLogger.log("building ansi decorated string with subjectString = '%s'", subjectString)
+
     local self = {}
     local resetString = buildAnsiCodeString(CODE_MAP.reset)
 

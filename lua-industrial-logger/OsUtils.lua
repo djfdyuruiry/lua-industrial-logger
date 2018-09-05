@@ -1,3 +1,4 @@
+local DebugLogger = require "lua-industrial-logger.DebugLogger"
 local StringUtils = require "lua-industrial-logger.StringUtils"
 
 local DIRECTORY_SEPERATOR = package.config:sub(1, 1)
@@ -12,6 +13,8 @@ end
 local getOutputRedirectString = function(redirectAllStreams)
     local nullPath = osIsUnixLike() and "/dev/null" or "NUL"
 
+    DebugLogger.log("getting output redirect string with redirectAllStreams = '%s' and nullPath = '%s'", redirectAllStreams, nullPath)
+
     if redirectAllStreams then
         return REDIRECT_ALL_OUTPUT:format(nullPath)
     end
@@ -20,6 +23,8 @@ local getOutputRedirectString = function(redirectAllStreams)
 end
 
 local assertCommandAvailable = function(command)
+    DebugLogger.log("asserting command available with command = '%s'", command)
+
     assert(
         os.execute(("command -v %s %s"):format(command, getOutputRedirectString(true))), 
         ("unable to find 'tar' command"):format(command)
@@ -29,8 +34,12 @@ end
 local getUnixZipCompressionUtil = function()
     assertCommandAvailable("zip")
 
+    DebugLogger.log("get unix zip compression util")
+
     return function(file, archiveName, removeFiles)
         local removeFilesFlag = removeFiles and "m" or ""
+
+        DebugLogger.log("calling unix zip compression util with file = '%s' and archiveName = '%s' and removeFiles = '%s' and removeFilesFlag = '%s'", file, archiveName, removeFiles, removeFilesFlag)
 
         assert(
             os.execute(("zip -%s9 '%s.zip' '%s' %s"):format(removeFilesFlag, archiveName, file, getOutputRedirectString())), 
@@ -42,8 +51,12 @@ end
 local getUnixTarCompressionUtil = function()
     assertCommandAvailable("tar")
 
+    DebugLogger.log("get unix tar compression util")
+
     return function(file, archiveName, removeFiles)
         local removeFilesFlag = removeFiles and "--remove-files" or ""
+
+        DebugLogger.log("calling unix tar compression util with file = '%s' and archiveName = '%s' and removeFiles = '%s' and removeFilesFlag = '%s'", file, archiveName, removeFiles, removeFilesFlag)
 
         assert(
             os.execute(("env GZIP=-9 tar -czf '%s.gz.tar' '%s' %s %s"):format(archiveName, file, removeFilesFlag, getOutputRedirectString(true))), 
@@ -59,6 +72,8 @@ local getCompressionUtil = function(format)
         error("file compression only supported on unix like operating systems")
     end
 
+    DebugLogger.log("getting compression util with format = '%s'", format)
+
     if format == "tar" then
         return getUnixTarCompressionUtil()
     elseif format == "zip" then
@@ -69,12 +84,16 @@ local getCompressionUtil = function(format)
 end
 
 local compressFilePath = function(filePath, archiveName, removeFiles, compressionFomat)
+    DebugLogger.log("compressing file path with file = '%s' and archiveName = '%s' and removeFiles = '%s' and compressionFomat = '%s'", file, archiveName, removeFiles, compressionFomat)
+
     local compressionUtil = getCompressionUtil(compressionFomat)
 
     compressionUtil(filePath, archiveName, removeFiles)
 end
 
 local getSupportedCompressionFormats = function()
+    DebugLogger.log("get supported compression formats")
+
     if osIsUnixLike() then
         return {tar = true, zip = true}
     end
@@ -83,6 +102,8 @@ local getSupportedCompressionFormats = function()
 end
 
 local directoryExists = function(directoryPath)
+    DebugLogger.log("checking directory exists with directoryPath = '%s'", directoryPath)
+
     local commandStatus, _, exitCode = os.execute(([[cd "%s" %s]]):format(directoryPath, getOutputRedirectString(true)))
 
     return commandStatus and exitCode == 0
@@ -95,6 +116,8 @@ local createDirectory = function(directoryPath)
         createMissingPathsFlag = "-p"
     end
 
+    DebugLogger.log("creating directory with directoryPath = '%s' and createMissingPathsFlag = '%s'", directoryPath, createMissingPathsFlag)
+
     assert(
         os.execute(([[mkdir %s "%s" %s]]):format(createMissingPathsFlag, directoryPath, getOutputRedirectString())), 
         ("error creating directory at path: %s"):format(directoryPath)
@@ -102,6 +125,8 @@ local createDirectory = function(directoryPath)
 end
 
 local getFileModificationTimeCommand = function(filePath)
+    DebugLogger.log("get file modification time command with filePath = '%s'", filePath)
+
     if osIsUnixLike() then
         return ([[date -r "%s" +%%s]]):format(filePath)
     end
@@ -109,7 +134,9 @@ local getFileModificationTimeCommand = function(filePath)
     return ([[for %%f in ("%s") do @echo %%~tf]]):format(filePath)
 end
 
-local getFileModificationTime = function(filePath)getFileModificationTimeCommand(filePath)
+local getFileModificationTime = function(filePath)
+    DebugLogger.log("get file modification time with filePath = '%s'", filePath)
+
     local modificationTimeCommand = getFileModificationTimeCommand(filePath)
     local dateProc, err = io.popen(modificationTimeCommand)
 
@@ -123,10 +150,14 @@ local getFileModificationTime = function(filePath)getFileModificationTimeCommand
         dateProc:close()
     end)
 
+    DebugLogger.log("read file modification time with filePath = '%s' and utcTimestamp = '%s'", filePath, utcTimestamp)
+
     return StringUtils.trim(utcTimestamp)
 end
 
 local getFileListingCommand = function(directoryPath, filePattern)
+    DebugLogger.log("get file listing command with directoryPath = '%s' and filePattern = '%s'", directoryPath, filePattern)
+
     if osIsUnixLike() then
         return ([[echo "%s"/%s]]):format(directoryPath, filePattern)
     end
@@ -135,6 +166,8 @@ local getFileListingCommand = function(directoryPath, filePattern)
 end
 
 local getFilesForPattern = function(directoryPath, filePattern)
+    DebugLogger.log("getting files with directoryPath = '%s' and filePattern = '%s'", directoryPath, filePattern)
+
     local fileListingCommand = getFileListingCommand(directoryPath, filePattern)
     local listProc, err = io.popen(fileListingCommand)
 
@@ -144,10 +177,14 @@ local getFilesForPattern = function(directoryPath, filePattern)
 
     local filesString = listProc:read("*a")
 
+    DebugLogger.log("result of getting files with directoryPath = '%s' and filePattern = '%s' and filesString = '%s'", directoryPath, filePattern, filesString)
+
     return StringUtils.explodeString(filesString, "%S+")
 end
 
 local getMoveFileCommand = function()
+    DebugLogger.log("get move file command")
+
     if osIsUnixLike() then
         return [[mv -f "%s" "%s"]]
     else
@@ -156,6 +193,8 @@ local getMoveFileCommand = function()
 end
 
 local moveFile = function(originalFilePath, newFilePath)
+    DebugLogger.log("move file with originalFilePath = '%s' and newFilePath = '%s'", originalFilePath, newFilePath)
+
     local moveFileCommand = getMoveFileCommand():format(originalFilePath, newFilePath)
     
     assert(os.execute(moveFileCommand))

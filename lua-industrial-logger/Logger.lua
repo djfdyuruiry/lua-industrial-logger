@@ -1,3 +1,4 @@
+local DebugLogger = require "lua-industrial-logger.DebugLogger"
 local Levels = require "lua-industrial-logger.Levels"
 local PatternBuilder = require "lua-industrial-logger.PatternBuilder"
 
@@ -5,7 +6,11 @@ local Logger = function(name, creator, loggerConfig)
     local patternBuilder = PatternBuilder(name, creator)
     local defaultPattern = loggerConfig.pattern
 
+    DebugLogger.log("created logger with name = '%s' and creator = '%s' and loggerConfig = '%s'", name, creator, loggerConfig)
+
     local buildLogMessageFromAppenderPattern = function(appender, level, formattedMessage)
+        DebugLogger.log("building log message with appender = '%s' and level = '%s' and formattedMessage = '%s'", appender, level, formattedMessage)
+
         if type(appender.config) == "table" and appender.config.pattern then
             message = patternBuilder.buildLogMessageFromPattern(appender.config.pattern, level, formattedMessage)
         end
@@ -16,6 +21,8 @@ local Logger = function(name, creator, loggerConfig)
     end
 
     local formatMessage = function(logMessage, ...)
+        DebugLogger.log("formatMessage with logMessage = '%s'", logMessage)
+
         local formattedMessage = string.format(logMessage, ...):gsub("%%", "%%%%")
 
         if loggerConfig.appendNewlines then
@@ -30,9 +37,13 @@ local Logger = function(name, creator, loggerConfig)
             return nil
         end
 
+        DebugLogger.log("isLogLevelAccepted with config = '%s' and configName = '%s' and level = '%s'", config, configName, level)
+    
         local levelAccepted = nil
         
         if type(config.filter) == "function" then
+            DebugLogger.log("executing level filter with config.filter = '%s'", config.filter)
+ 
             local filterStatus, filterError = xpcall(function()
                 levelAccepted = (levelAccepted == nil and true or levelAccepted) and config.filter(level)
             end, debug.traceback)
@@ -41,21 +52,31 @@ local Logger = function(name, creator, loggerConfig)
                 error(("Error applying filter in config '%s': %s"):format(configName, filterError))
             end
         elseif type(config.level) == "number" then
+            DebugLogger.log("applying level from config with config.level = '%s'", config.level)
+
             levelAccepted = (levelAccepted == nil and true or levelAccepted) and level == config.level
         else
             if type(config.minLevel) == "number" then
+                DebugLogger.log("applying minLevel from config with config.minLevel = '%s'", config.minLevel)
+
                 levelAccepted = (levelAccepted == nil and true or levelAccepted) and level >= config.minLevel
             end
             
             if type(config.maxLevel) == "number" then
+                DebugLogger.log("applying maxLevel from config with config.maxLevel = '%s'", config.maxLevel)
+
                 levelAccepted = (levelAccepted == nil and true or levelAccepted) and level <= config.maxLevel
             end
         end
         
+        DebugLogger.log("isLogLevelAccepted returning with levelAccepted = '%s'", levelAccepted)
+    
         return levelAccepted
     end
 
     local writeToAppenders = function(level, logMessage, ...)
+        DebugLogger.log("writing to appenders with level = '%s' and logMessage = '%s'", level, logMessage)
+
         local levelValue = Levels.parse(level)
         local configAcceptedLevel = isLogLevelAccepted(loggerConfig, "loggerConfig", levelValue)
         local formattedMessage, defaultPatternMessage 
@@ -67,6 +88,8 @@ local Logger = function(name, creator, loggerConfig)
                 appenderAcceptedLevel = configAcceptedLevel
             end
 
+            DebugLogger.log("checked if log level accepted by appender with appenderAcceptedLevel = '%s' and appenderName = '%s' and levelValue = '%s'", appenderAcceptedLevel, appenderName, levelValue)
+            
             if appenderAcceptedLevel then
                 formattedMessage = formattedMessage or formatMessage(logMessage, ...)
                 defaultPatternMessage = defaultPatternMessage or buildLogMessageWithPattern(level, formattedMessage)
@@ -97,6 +120,8 @@ local Logger = function(name, creator, loggerConfig)
                 Levels.parse(level)
 
                 if level:lower() == "off" then
+                    DebugLogger.log("logger is turned off, ignoring log call with level = '%s' and name = '%s' and creator = '%s'", level, name, creator)
+
                     return nil
                 end
 

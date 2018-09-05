@@ -1,3 +1,5 @@
+local DebugLogger = require "lua-industrial-logger.DebugLogger"
+
 local LEVELS =
 {
     OFF = 0,
@@ -9,6 +11,8 @@ local LEVELS =
 }
 
 LEVELS.parse = function(level)
+    DebugLogger.log("attempting to parse log level with level = '%s'", level)
+
     return LEVELS[tostring(level):upper()] or error(("Unable to parse log level using string '%s'"):format(tostring(level)))
 end
 

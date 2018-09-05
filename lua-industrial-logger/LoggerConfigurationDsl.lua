@@ -1,8 +1,11 @@
 local setfenv = require "lua-industrial-logger.polyfills.setfenv"
 
+local DebugLogger = require "lua-industrial-logger.DebugLogger"
 local Levels = require "lua-industrial-logger.Levels"
 
 local appenderCreator = function(config, defaultName, module)
+    DebugLogger.log("appender creator declared with defaultName = '%s' and module = '%s'", defaultName, module)
+
     return function(name)
         name = name or defaultName
 
@@ -12,8 +15,12 @@ local appenderCreator = function(config, defaultName, module)
             module = module
         }
 
+        DebugLogger.log("appender defined in config DSL with name = '%s' and module = '%s'", name, module)
+
         return function(appenderConfig)
             config.appenders[name].config = appenderConfig
+
+            DebugLogger.log("config for appender defined in config DSL for appender with name = '%s' and config = '%s'", name, appenderConfig)
         end
     end
 end
@@ -23,6 +30,8 @@ local runAppenderGenerators = function(appenderGenerators)
         return
     end
 
+    DebugLogger.log("appender generators defined in config DSL")
+
     for _, appenderGenerator in ipairs(appenderGenerators) do
         if type(appenderGenerator) == "function" then
             appenderGenerator()
@@ -31,8 +40,12 @@ local runAppenderGenerators = function(appenderGenerators)
 end
 
 local configPropertySetter = function(config, propertyName)
+    DebugLogger.log("config property setter declared in config DSL with config = '%s' and propertyName = '%s'", config, propertyName)
+
     return function(value)
         config[propertyName] = value
+
+        DebugLogger.log("config property value declared in config DSL with config = '%s' and propertyName = '%s' and value = '%s'", config, propertyName, value)
     end
 end
 

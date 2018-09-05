@@ -1,6 +1,8 @@
 local DIRECTORY_SEPERATOR = package.config:sub(1, 1)
 local LAST_SEPERATOR_REGEX = ([[^.*()%s]]):format(DIRECTORY_SEPERATOR)
 
+local DebugLogger = require "lua-industrial-logger.DebugLogger"
+
 local useFile = function(filePath, mode, useBlock)
     local file = assert(io.open(filePath, mode))
     
@@ -18,18 +20,24 @@ local useFile = function(filePath, mode, useBlock)
 end
 
 local appendTextToFile = function(filePath, text)
+    DebugLogger.log("appending text to file with filePath = '%s'", filePath)
+
     return useFile(filePath, "a", function(file)
         return file:write(text)
     end)
 end
 
-local getFileSizeInBytes = function(filePath)    
+local getFileSizeInBytes = function(filePath)  
+    DebugLogger.log("get file size in bytes with filePath = '%s'", filePath)
+  
     return useFile(filePath, "r", function(file)
         return file:seek("end")
     end)
 end
 
 local fileExists = function(filePath)
+    DebugLogger.log("file exists with filePath = '%s'", filePath)
+
     local file, fileOpenError = io.open(filePath)
 
     pcall(function()
@@ -40,6 +48,8 @@ local fileExists = function(filePath)
 end
 
 local getFileDirectory = function(filePath)
+    DebugLogger.log("get file directory with filePath = '%s'", filePath)
+
     local lastSeperatorIndex = filePath:match(LAST_SEPERATOR_REGEX)
 
     if not lastSeperatorIndex then
@@ -50,10 +60,14 @@ local getFileDirectory = function(filePath)
 end
 
 local combinePaths = function(left, right)
+    DebugLogger.log("combine paths with left = '%s' and right = '%s'", left, right)
+
     return string.format("%s%s%s", left, DIRECTORY_SEPERATOR, right)
 end
 
 local deleteFile = function(filePath)
+    DebugLogger.log("delete file with filePath = '%s'", filePath)
+
     assert(os.remove(filePath))
 end
 

@@ -1,4 +1,5 @@
 local AnsiDecoratedStringBuilder = require "lua-industrial-logger.AnsiDecoratedStringBuilder"
+local DebugLogger = require "lua-industrial-logger.DebugLogger"
 local StringUtils = require "lua-industrial-logger.StringUtils"
 
 local ConsoleAppender = function(name, appenderConfig)
@@ -6,6 +7,8 @@ local ConsoleAppender = function(name, appenderConfig)
     local outputStream
 
     local validateConfig = function()
+        DebugLogger.log("validating configuration for appender with name = '%s' and config = '%s'", name, config)
+
         local outputStreamName = not StringUtils.isBlank(config.stream) and config.stream or "stdout"
 
         outputStream = io[outputStreamName]
@@ -18,6 +21,8 @@ local ConsoleAppender = function(name, appenderConfig)
                 )
             )
         end
+
+        DebugLogger.log("validated configuration for appender with name = '%s' and config = '%s' and outputStream = '%s'", name, config, outputStream)
     end
 
     validateConfig()
@@ -26,6 +31,8 @@ local ConsoleAppender = function(name, appenderConfig)
         local colourConfig = config.colours
 
         if colourConfig then
+            DebugLogger.log("applying colour to log message for appender with name = '%s'", name)
+
             if type(colourConfig.forLevels) == "table" then
                 colourConfig = colourConfig.forLevels[level]
             end

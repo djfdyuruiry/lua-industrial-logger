@@ -1,6 +1,10 @@
 MAX_ID_LENGTH = 10
 
+local DebugLogger = require "lua-industrial-logger.DebugLogger"
+
 local generateNonUniqueId = function()
+    DebugLogger.log("generateNonUniqueId")
+
     local threadAddress = tostring({}):sub(10)
 
     local threadAddressLetters = threadAddress:gsub("%d", "")
@@ -15,7 +19,11 @@ local generateNonUniqueId = function()
     local randomNumber = math.random(maxRandomNumber)
     local idFormatString = string.format("%s%d%s", "%s%0", maxNumberWidth, "d")
 
-    return string.format(idFormatString, threadAddressLetters, randomNumber)
+    local nonUniqueId = string.format(idFormatString, threadAddressLetters, randomNumber)
+
+    DebugLogger.log("generated non unique ID with nonUniqueId = '%s'", nonUniqueId)
+
+    return nonUniqueId
 end
 
 return
