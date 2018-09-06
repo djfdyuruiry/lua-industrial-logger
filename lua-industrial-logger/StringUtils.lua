@@ -54,9 +54,11 @@ local concat = function(...)
 
     local result = ""    
 
-    for _, str in ipairs(...) do
+    for _, str in ipairs({...}) do
         result = ("%s%s"):format(result, str)
     end
+
+    DebugLogger.log("concat string returning with result = '%s'", result)
 
     return result
 end

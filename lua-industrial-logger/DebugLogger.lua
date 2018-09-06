@@ -7,7 +7,7 @@ local log = function(message, ...)
         return
     end
 
-    local formattedMessage = (message):format(...)
+    local formattedMessage = (message):format(...):gsub("\r", [[\r]]):gsub("\n", [[\n]])
     local callingFunctionInfo = debug.getinfo(2)
 
     local codeLocation = ("[%s:%s:%s]"):format(

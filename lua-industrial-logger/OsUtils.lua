@@ -2,6 +2,7 @@ local DebugLogger = require "lua-industrial-logger.DebugLogger"
 local StringUtils = require "lua-industrial-logger.StringUtils"
 
 local DIRECTORY_SEPERATOR = package.config:sub(1, 1)
+local DIRECTORY_SEPERATOR_REGEX = ("[%s]+"):format(DIRECTORY_SEPERATOR)
 local DEFAULT_COMPRESSION_FORMAT = "tar"
 local REDIRECT_OUTPUT = "> %s"
 local REDIRECT_ALL_OUTPUT = "> %s 2>&1"
@@ -95,7 +96,17 @@ local getSupportedCompressionFormats = function()
     DebugLogger.log("get supported compression formats")
 
     if osIsUnixLike() then
-        return {tar = true, zip = true}
+        return 
+        {
+            tar = 
+            { 
+                extension = "gz.tar"
+            },
+            zip =
+            {
+                extension = "zip"
+            }
+        }
     end
 
     return {}
@@ -144,15 +155,24 @@ local getFileModificationTime = function(filePath)
         error(("Error getting modification time for file '%s': %s"):format(filePath, err or "unknown error"))
     end
 
-    local utcTimestamp = dateProc:read("*a")
+    local fileModificationDateTime = StringUtils.trim(dateProc:read("*a"))
 
     pcall(function()
         dateProc:close()
     end)
 
+    local utcTimestamp
+
+    if not osIsUnixLike() then
+        -- TODO: need to somehow convert the date thrown back into a useable timestamp or use powershell
+        error("windows implementation of getFileModificationTime is not complete")
+    else
+        utcTimestamp = fileModificationDateTime
+    end
+
     DebugLogger.log("read file modification time with filePath = '%s' and utcTimestamp = '%s'", filePath, utcTimestamp)
 
-    return StringUtils.trim(utcTimestamp)
+    return tonumber(utcTimestamp)
 end
 
 local getFileListingCommand = function(directoryPath, filePattern)
@@ -175,7 +195,7 @@ local getFilesForPattern = function(directoryPath, filePattern)
         error(("Error listing files in directory '%s' using pattern '%s': %s"):format(directoryPath, filePattern, err or "unknown error"))
     end
 
-    local filesString = listProc:read("*a")
+    local filesString = listProc:read("*a"):gsub(DIRECTORY_SEPERATOR_REGEX, DIRECTORY_SEPERATOR)
 
     DebugLogger.log("result of getting files with directoryPath = '%s' and filePattern = '%s' and filesString = '%s'", directoryPath, filePattern, filesString)
 
