@@ -3,6 +3,50 @@ local setfenv = require "lua-industrial-logger.polyfills.setfenv"
 local DebugLogger = require "lua-industrial-logger.DebugLogger"
 local Levels = require "lua-industrial-logger.Levels"
 
+local buildTablePropertySetter = function(rootTbl, rootIdx, callback)
+    if type(callback) ~= "function" then
+        callback = function() end
+    end
+
+    return setmetatable({},
+    {
+        __call = function(_, value)
+            rootTbl[rootIdx] = value
+            callback(value)
+        end,
+        __index = function(_, index)
+            if rootIdx then
+                rootTbl[rootIdx] = {}
+            end
+
+            return setmetatable({},
+            {
+                __call = function(_, value)
+                    if rootIdx then
+                        rootTbl[rootIdx][index] = value
+                    else
+                        rootTbl[index] = value
+                    end 
+                    
+                    callback(value, index)
+                end,
+                __index = function(_, subIndex)
+                    if rootIdx then
+                        rootTbl[rootIdx][index] = rootTbl[index] or {}
+                    else
+                        rootTbl[index] = rootTbl[index] or {}
+                    end
+
+                    return function(value)
+                        rootTbl[index][subIndex] = value
+                        callback(value, index, subindex)
+                    end
+                end
+            })
+        end
+    })
+end
+
 local appenderCreator = function(config, defaultName, module)
     DebugLogger.log("appender creator declared with defaultName = '%s' and module = '%s'", defaultName, module)
 
@@ -42,11 +86,9 @@ end
 local configPropertySetter = function(config, propertyName)
     DebugLogger.log("config property setter declared in config DSL with config = '%s' and propertyName = '%s'", config, propertyName)
 
-    return function(value)
-        config[propertyName] = value
-
-        DebugLogger.log("config property value declared in config DSL with config = '%s' and propertyName = '%s' and value = '%s'", config, propertyName, value)
-    end
+    return buildTablePropertySetter(config, propertyName, function(value, index, subIndex)
+        DebugLogger.log("config property value declared in config DSL with propertyName = '%s' and value = '%s' and index = '%s' and subindex = '%s'", propertyName, config, tostring(index), tostring(subIndex))
+    end)
 end
 
 local syntaxSugar = function() end
