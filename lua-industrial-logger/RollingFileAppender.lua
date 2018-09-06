@@ -13,6 +13,8 @@ local RollingFileAppender = function(name, appenderConfig)
     local maxBackupFiles
 
     local validateConfig = function()
+        DebugLogger.log("validating appender config")
+
         if type(rolloverConfig) ~= "table" then
             error(("'rollover' configuration table not supplied for Rolling FileAppender '%s'"):format(name))
         end
@@ -46,28 +48,40 @@ local RollingFileAppender = function(name, appenderConfig)
 
         maxLogFileSizeInBytes = rolloverConfig.maxFileSizeInKb * 1000
         maxBackupFiles = rolloverConfig.maxBackupFiles
+
+        DebugLogger.log("validated appender config with backupFileFormat = '%s' and maxLogFileSizeInBytes = '%d' and maxBackupFiles = '%d'", backupFileFormat, maxLogFileSizeInBytes, maxBackupFiles)
     end
 
     validateConfig()
 
     local buildBackupFilePath = function(backupIndex)
+        DebugLogger.log("build backup file path with backupIndex = '%d'", backupIndex)
+    
         local backupFileName = StringUtils.concat(logFilePath, "-", backupIndex)
 
-        return FileUtils.combinePaths(fileAppender.logFileDirectory, backupFileName)
+        local backupFilePath = FileUtils.combinePaths(fileAppender.logFileDirectory, backupFileName)
+
+        DebugLogger.log("build backup file path returning with backupFilePath = '%s'", backupFilePath)
+
+        return backupFilePath
     end
 
     local getNextBackupFileIndex = function()
+        DebugLogger.log("get next backup file index")
+
         for idx = 1, maxBackupFilePath do
             local backupFilePath = buildBackupFilePath(idx)
 
             if not FileUtils.fileExists(backupFile) then
-                DebugLogger.log("Next backup file index: %d", idx)
+                DebugLogger.log("get next backup file index returning with idx = '%d'", idx)
                 return idx
             end
         end
     end
 
     local rolloverLogBackups = function(maxBackupFilePath)
+        DebugLogger.log("rolling over log file backups with maxBackupFilePath = '%s'", maxBackupFilePath)
+
         FileUtils.deleteFile(maxBackupFilePath)
 
         for idx = maxBackupFiles - 1, 1, -1 do
@@ -82,13 +96,18 @@ local RollingFileAppender = function(name, appenderConfig)
     end
 
     local rolloverLogFile = function()
+        DebugLogger.log("rolling over log file")
+
         local maxBackupFilePath = buildBackupFilePath(maxBackupFiles)
 
         if FileUtils.fileExists(maxBackupFilePath) then
+            DebugLogger.log("rolling over log backups due to number of backup files reaching max with maxBackupFilePath = '%s'", maxBackupFilePath)
             rolloverLogBackups(maxBackupFilePath)
         end
 
         local backupFilePath = buildBackupFilePath(getNextBackupFileIndex())
+
+        DebugLogger.log("backing up log file with logFilePath = '%s' and backupFilePath = '%s' and backupFileFormat = '%s'", logFilePath, backupFilePath, backupFileFormat)
 
         OsUtils.compressFilePath(logFilePath, backupFilePath, true, backupFileFormat)
     end

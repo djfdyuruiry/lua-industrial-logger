@@ -21,7 +21,7 @@ local Logger = function(name, creator, loggerConfig)
     end
 
     local formatMessage = function(logMessage, ...)
-        DebugLogger.log("formatMessage with logMessage = '%s'", logMessage)
+        DebugLogger.log("formatting message with logMessage = '%s'", logMessage)
 
         local formattedMessage = string.format(logMessage, ...):gsub("%%", "%%%%")
 
@@ -37,7 +37,7 @@ local Logger = function(name, creator, loggerConfig)
             return nil
         end
 
-        DebugLogger.log("isLogLevelAccepted with config = '%s' and configName = '%s' and level = '%s'", config, configName, level)
+        DebugLogger.log("checking if log level is accepted with config = '%s' and configName = '%s' and level = '%s'", config, configName, level)
     
         local levelAccepted = nil
         
@@ -69,7 +69,7 @@ local Logger = function(name, creator, loggerConfig)
             end
         end
         
-        DebugLogger.log("isLogLevelAccepted returning with levelAccepted = '%s'", levelAccepted)
+        DebugLogger.log("checking if log level is accepted returning with levelAccepted = '%s'", levelAccepted)
     
         return levelAccepted
     end

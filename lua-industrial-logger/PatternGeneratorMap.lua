@@ -1,8 +1,11 @@
+local DebugLogger = require "lua-industrial-logger.DebugLogger"
 local ThreadUtils = require("lua-industrial-logger.ThreadUtils")
 
 local PATTERN_GENERATOR_MAP = 
 {
     ["%{iso8601}d"] = function() 
+        DebugLogger.log("building ISO 8601 format date for pattern")
+
         local utcDateTime = os.date("!*t")
 
         return string.format("%04d-%02d-%02dT%02d:%02d:%02dZ", 
@@ -11,6 +14,8 @@ local PATTERN_GENERATOR_MAP =
     end,
 
     ["%d"] = function()
+        DebugLogger.log("building default locale format date for pattern")
+
         return os.date("%c")
     end,
 
