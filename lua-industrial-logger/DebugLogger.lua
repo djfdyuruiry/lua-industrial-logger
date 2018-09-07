@@ -1,4 +1,5 @@
 local DEBUG_ENV_VAR_NAME = "LUA_LOG_DEBUG"
+local DIRECTORY_SEPERATOR = package.config:sub(1, 1)
 
 local debugLoggingEnabled = false
 
@@ -10,13 +11,15 @@ local log = function(message, ...)
     local formattedMessage = (message):format(...):gsub("\r", [[\r]]):gsub("\n", [[\n]])
     local callingFunctionInfo = debug.getinfo(2)
 
-    local codeLocation = ("[%s:%s:%s]"):format(
-        callingFunctionInfo.short_src,
-        callingFunctionInfo.what,
+    local codeLocation = ("[%s:%s]"):format(
+        callingFunctionInfo.short_src:gsub("lua[-]industrial[-]logger", "lil")
+            :gsub(("[.][%s]"):format(DIRECTORY_SEPERATOR), "")
+            :gsub(DIRECTORY_SEPERATOR, ".")
+            :gsub("[.]lua", ""),
         callingFunctionInfo.currentline
     )
 
-    io.stderr:write(("%s - %s\r\n"):format(codeLocation, formattedMessage))
+    print(("%s - %s"):format(codeLocation, formattedMessage))
 end
 
 local setDebugLoggingEnabled = function(isEnabled)

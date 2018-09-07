@@ -64,10 +64,8 @@ local AnsiDecoratedStringBuilder = function(subjectString)
     end
 
     self.build = function()
-        local ansiDecoratedString = ""
+        local ansiDecoratedString = resetString
 
-        ansiDecoratedString = string.format("%s%s", ansiDecoratedString, resetString)
-        
         if self.modifierCode then
             ansiDecoratedString = string.format("%s%s", ansiDecoratedString, buildAnsiCodeString(self.modifierCode))
         end
@@ -80,11 +78,7 @@ local AnsiDecoratedStringBuilder = function(subjectString)
             ansiDecoratedString = string.format("%s%s", ansiDecoratedString, buildAnsiCodeString(self.backgroundCode))
         end
 
-        ansiDecoratedString = string.format("%s%s", ansiDecoratedString, subjectString)
-
-        ansiDecoratedString = string.format("%s%s", ansiDecoratedString, resetString)
-
-        return ansiDecoratedString
+        return string.format("%s%s%s", ansiDecoratedString, subjectString, resetString)
     end
 
     return self

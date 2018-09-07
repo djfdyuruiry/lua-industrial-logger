@@ -24,7 +24,7 @@ local PATTERN_GENERATOR_MAP =
     end,
 
     ["%l"] = function(level)
-        return string.upper(level)
+        return ("%-5s"):format(string.upper(level))
     end,
 
     ["%n"] = function(_, loggerName, creator)
