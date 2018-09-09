@@ -80,12 +80,6 @@ local combinePaths = function(left, right)
     return string.format("%s%s%s", left, DIRECTORY_SEPERATOR, right):gsub(DIRECTORY_SEPERATOR_REGEX, DIRECTORY_SEPERATOR)
 end
 
-local deleteFile = function(filePath)
-    DebugLogger.log("delete file with filePath = '%s'", filePath)
-
-    assert(os.remove(filePath))
-end
-
 return
 {
     useFile = useFile,
@@ -94,6 +88,5 @@ return
     fileExists = fileExists,
     getFileDirectory = getFileDirectory,
     getFileName = getFileName,
-    combinePaths = combinePaths,
-    deleteFile = deleteFile
+    combinePaths = combinePaths
 }

@@ -173,21 +173,22 @@ end
 local getSupportedCompressionFormats = function()
     DebugLogger.log("get supported compression formats")
 
-    if osIsUnixLike() then
-        return 
+    local supportedFormats = 
+    {
+        zip =
         {
-            tar = 
-            { 
-                extension = "gz.tar"
-            },
-            zip =
-            {
-                extension = "zip"
-            }
+            extension = "zip"
+        }
+    }
+
+    if osIsUnixLike() then
+        supportedFormats.tar = 
+        { 
+            extension = "gz.tar"
         }
     end
 
-    return {}
+    return supportedFormats
 end
 
 local directoryExists = function(directoryPath)
@@ -293,6 +294,12 @@ local moveFile = function(originalFilePath, newFilePath)
     assert(os.execute(moveFileCommand))
 end
 
+local deleteFile = function(filePath)
+    DebugLogger.log("delete file with filePath = '%s'", filePath)
+
+    assert(os.remove(filePath))
+end
+
 return
 {
     osIsUnixLike = osIsUnixLike,
@@ -304,5 +311,6 @@ return
     createDirectory = createDirectory,
     getFileModificationTime = getFileModificationTime,
     getFilesForPattern = getFilesForPattern,
-    moveFile = moveFile
+    moveFile = moveFile,
+    deleteFile = deleteFile
 }

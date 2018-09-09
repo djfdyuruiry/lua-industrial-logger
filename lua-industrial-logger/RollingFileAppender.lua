@@ -110,7 +110,7 @@ local RollingFileAppender = function(name, appenderConfig)
             end
         end
 
-        FileUtils.deleteFile(oldestBackupFile)
+        OsUtils.deleteFile(oldestBackupFile)
     end
 
     local checkIfMaxNumberOfLogBackupsArePresent = function()
