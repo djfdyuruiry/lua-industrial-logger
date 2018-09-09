@@ -11,6 +11,10 @@ local osIsUnixLike = function()
     return DIRECTORY_SEPERATOR == "/"
 end
 
+local getPowershellCommand = function(powershellString)
+    return ([[powershell -Command "%s"]]):format(powershellString)
+end
+
 local getOutputRedirectString = function(redirectAllStreams)
     local nullPath = osIsUnixLike() and "/dev/null" or "NUL"
 
@@ -142,7 +146,7 @@ local getFileModificationTimeCommand = function(filePath)
         return ([[date -r "%s" +%%s]]):format(filePath)
     end
 
-    return ([[for %%f in ("%s") do @echo %%~tf]]):format(filePath)
+    return getPowershellCommand([[(Get-Item -Path '%s').LastWriteTime.ToFileTimeUtc()]]):format(filePath)
 end
 
 local getFileModificationTime = function(filePath)

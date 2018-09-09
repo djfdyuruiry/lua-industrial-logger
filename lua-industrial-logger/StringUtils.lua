@@ -34,7 +34,7 @@ end
 local isBlank = function(subject)
     DebugLogger.log("checking is blank with subject = '%s'", subject)
 
-    return subject == nil or trim(subject) == ""
+    return type(subject) ~= "string" or trim(subject) == ""
 end
 
 local explodeString = function(subject, seperator)
