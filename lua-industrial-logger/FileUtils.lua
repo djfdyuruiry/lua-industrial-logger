@@ -6,8 +6,10 @@ local DebugLogger = require "lua-industrial-logger.DebugLogger"
 
 local useFile = function(filePath, mode, useBlock)
     local file = assert(io.open(filePath, mode))
-    
-    local useBlockOk, useBlockErrorOrRetVal = xpcall(useBlock, debug.traceback, file)
+
+    local useBlockOk, useBlockErrorOrRetVal = xpcall(function() 
+        return useBlock(file)
+    end, debug.traceback)
 
     pcall(function()
         file:close()
@@ -30,7 +32,7 @@ end
 
 local getFileSizeInBytes = function(filePath)  
     DebugLogger.log("get file size in bytes with filePath = '%s'", filePath)
-  
+
     return useFile(filePath, "r", function(file)
         return file:seek("end")
     end)

@@ -4,7 +4,9 @@ local FileUtils = require "lua-industrial-logger.FileUtils"
 local OsUtils = require "lua-industrial-logger.OsUtils"
 local StringUtils = require "lua-industrial-logger.StringUtils"
 
-local compressionFormats = OsUtils.getSupportedCompressionFormats()
+local COPY_FORMAT = "copy"
+local COPY_FORMAT_EXTENSION = "bak"
+local COMPRESSION_FORMATS = OsUtils.getSupportedCompressionFormats()
 
 local RollingFileAppender = function(name, appenderConfig)
     local fileAppender = FileAppender(name, appenderConfig)
@@ -35,14 +37,18 @@ local RollingFileAppender = function(name, appenderConfig)
             end
 
             local potentialFormat = rolloverConfig.backupFileFormat:lower()
-            local supportedFormats = OsUtils.getSupportedCompressionFormats()
 
-            if not supportedFormats[potentialFormat] then
-                error(("'backupFileFormat' value '%s',specified for RollingFileAppender '%s', is not a supported format on the current OS"):format(potentialFormat, name))
+            if potentialFormat ~= COPY_FORMAT then
+                if not COMPRESSION_FORMATS[potentialFormat] then
+                    error(("'backupFileFormat' value '%s',specified for RollingFileAppender '%s', is not a supported format on the current OS"):format(potentialFormat, name))
+                end
+
+                backupFileExtension = COMPRESSION_FORMATS[potentialFormat].extension
+            else
+                backupFileExtension = COPY_FORMAT_EXTENSION
             end
 
             backupFileFormat = potentialFormat
-            backupFileExtension = supportedFormats[potentialFormat].extension
         end
 
         if type(rolloverConfig.maxBackupFiles) ~= "number" then
@@ -130,11 +136,21 @@ local RollingFileAppender = function(name, appenderConfig)
             rolloverLogBackups(backupFiles)
         end
 
-        local backupFilePath = buildBackupFilePath(getNextBackupFileIndex())
-
         DebugLogger.log("backing up log file with logFilePath = '%s' and backupFilePath = '%s' and backupFileFormat = '%s'", logFilePath, backupFilePath, backupFileFormat)
 
-        OsUtils.compressFilePath(logFilePath, backupFilePath, true, backupFileFormat)
+        if backupFileFormat ~= COPY_FORMAT then
+            OsUtils.compressFilePath(
+                logFilePath,
+                buildBackupFilePath(getNextBackupFileIndex()), 
+                true, 
+                backupFileFormat
+            )
+        else
+            OsUtils.moveFile(
+                logFilePath,
+                buildBackupFilePath(getNextBackupFileIndex(), true)
+            )
+        end
     end
 
     local append = function(level, message)
