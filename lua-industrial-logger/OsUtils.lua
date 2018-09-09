@@ -7,8 +7,16 @@ local DEFAULT_COMPRESSION_FORMAT = "tar"
 local REDIRECT_OUTPUT = "> %s"
 local REDIRECT_ALL_OUTPUT = "> %s 2>&1"
 
+local osIsUnixLikeResult
+local powershellIsAvailableResult
+local powershellVersionDetected
+
 local osIsUnixLike = function()
-    return DIRECTORY_SEPERATOR == "/"
+    if type(osIsUnixLikeResult) ~= "boolean" then
+        osIsUnixLikeResult = DIRECTORY_SEPERATOR == "/"
+    end
+
+    return osIsUnixLikeResult
 end
 
 local getPowershellCommand = function(powershellString)
@@ -27,12 +35,50 @@ local getOutputRedirectString = function(redirectAllStreams)
     return REDIRECT_OUTPUT:format(nullPath)
 end
 
+local powershellIsAvailable = function()
+    if type(powershellIsAvailableResult) ~= "boolean" then
+
+        powershellIsAvailableResult = (os.execute(
+            ("where powershell %s"):format(getOutputRedirectString(true))
+        ) == 0)
+    end
+
+    return powershellIsAvailableResult
+end
+
+local getPowershellVersion = function()
+    if powershellVersionDetected then
+        return powershellVersionDetected
+    end
+
+    local version = -1
+
+    if powershellIsAvailable() then
+        local powershellVersionCommand = getPowershellCommand(
+            "If (Test-Path Variable:PSVersionTable) {exit $PSVersionTable.PSVersion.Major} Else {exit 1}",
+            true
+        )
+
+        version = os.execute(
+            ("%s %s"):format(powershellVersionCommand, getOutputRedirectString(true))
+        )
+    end
+
+    powershellVersionDetected = version
+
+    DebugLogger.log("get powershell version returning with powershellVersion = '%d'", version)
+
+    return version
+end
+
 local assertCommandAvailable = function(command)
     DebugLogger.log("asserting command available with command = '%s'", command)
 
     assert(
-        os.execute(("command -v %s %s"):format(command, getOutputRedirectString(true))), 
-        ("unable to find 'tar' command"):format(command)
+        os.execute(
+            ("command -v %s %s"):format(command, getOutputRedirectString(true))
+        ), 
+        ("unable to find '%s' command"):format(command)
     )
 end
 
@@ -70,11 +116,39 @@ local getUnixTarCompressionUtil = function()
     end
 end
 
+local getPowershellCompressionUtil = function(format)
+    if format ~= "zip" then
+        error("windows file compression only supports the 'zip' compression format")
+    end
+
+    if not powershellIsAvailable() or getPowershellVersion() < 5 then 
+        error("windows file compression requires powershell v5 or newer")
+    end
+
+    return function(file, archiveName, removeFiles)        
+        local zipCommand = getPowershellCommand(("Compress-Archive -Path '%s' -DestinationPath '%s.zip' -CompressionLevel Optimal -Force"):format(file, archiveName))
+
+        DebugLogger.log("calling powershell zip compression util with file = '%s' and archiveName = '%s' and removeFiles = '%s' and removeFilesFlag = '%s'", file, archiveName, removeFiles, removeFilesFlag)
+
+        assert(
+            os.execute(("%s %s"):format(zipCommand, getOutputRedirectString(true))),
+            ("error creating zip archive '%s' for file '%s'"):format(archiveName, file)
+        )
+
+        if removeFiles then
+            assert(
+                os.remove(file),
+                ("error deleting zipped file '%s'"):format(file)
+            )
+        end
+    end
+end
+
 local getCompressionUtil = function(format)
     format = format or DEFAULT_COMPRESSION_FORMAT
 
     if not osIsUnixLike() then
-        error("file compression only supported on unix like operating systems")
+        return getPowershellCompressionUtil(format)
     end
 
     DebugLogger.log("getting compression util with format = '%s'", format)
@@ -146,6 +220,10 @@ local getFileModificationTimeCommand = function(filePath)
         return ([[date -r "%s" +%%s]]):format(filePath)
     end
 
+    if not powershellIsAvailable() then
+        error("windows file modification time lookup requires powershell")
+    end
+
     return getPowershellCommand([[(Get-Item -Path '%s').LastWriteTime.ToFileTimeUtc()]]):format(filePath)
 end
 
@@ -159,20 +237,11 @@ local getFileModificationTime = function(filePath)
         error(("Error getting modification time for file '%s': %s"):format(filePath, err or "unknown error"))
     end
 
-    local fileModificationDateTime = StringUtils.trim(dateProc:read("*a"))
+    local utcTimestamp = StringUtils.trim(dateProc:read("*a"))
 
     pcall(function()
         dateProc:close()
     end)
-
-    local utcTimestamp
-
-    if not osIsUnixLike() then
-        -- TODO: need to somehow convert the date thrown back into a useable timestamp or use powershell
-        error("windows implementation of getFileModificationTime is not complete")
-    else
-        utcTimestamp = fileModificationDateTime
-    end
 
     DebugLogger.log("read file modification time with filePath = '%s' and utcTimestamp = '%s'", filePath, utcTimestamp)
 
