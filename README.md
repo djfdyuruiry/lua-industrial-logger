@@ -1,6 +1,6 @@
 # Lua Industrial Logger
 
-A pure lua logging framework that follows the conventions of popular frameworks like `logback`, `log4net` and `log4j`
+A pure lua logging framework that follows the conventions of popular frameworks like `logback`, `log4net` and `log4j`. Configuration uses a Lua based DSL for ease of use and flexibility.
 
 **Important: if you wish to rollover logs or compress old log files you will need certain utilities installed in your environment, see `rollingFile` in the `Config Reference` section below for more info**
 
