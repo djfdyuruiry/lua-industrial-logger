@@ -7,6 +7,8 @@ source = {
 description = {
         summary = "A logging framework adding simple, powerful and reliable logs to any Lua application",
         detailed = [[
+            A pure lua logging framework that follows the conventions of popular frameworks like logback, log4net and log4j. Configuration uses a Lua based DSL for ease of use and flexibility.
+
             See: https://github.com/djfdyuruiry/lua-industrual-strength-logging/blob/master/README.md
 
             Created by djfdyuruiry: https://github.com/djfdyuruiry
