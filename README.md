@@ -8,7 +8,7 @@ A pure lua logging framework that follows the conventions of popular frameworks 
 
 Install using [luarocks](https://github.com/luarocks/luarocks/wiki/Download)
 
-`luarocks install lua-industrial-logger`
+`luarocks install --server=http://luarocks.org/dev lua-industrial-logger`
 
 To use, import the module and create a new logger instance:
 
@@ -124,7 +124,7 @@ Below is the config DSL structure and available options:
     - `pattern`: log pattern to use
     - `minLevel`: minimum log level to log
     - `maxLevel`: maximum log level to log
-    - `filter`: lua method that accepts a level as an argument and returns a boolean, return true to log message for the given level
+    - `filter`: lua function that accepts a level as an argument and returns a boolean, return true to log message for the given level
     - `appenders`: list of appenders use
         - `console`: add a console appender 
             ```lua
@@ -133,7 +133,7 @@ Below is the config DSL structure and available options:
                 }
             ```  
             - `stream`: standard stream to log to, default is 'stdout'
-            - `colours`: configuration table fpr colours (optional)
+            - `colours`: configuration table for colours (optional)
                 - `foreground`: foreground colour (optional)
                 - `background`: background colour (optional)
                 - `format`: format output (optional)
@@ -187,14 +187,14 @@ All appenders can have any of the following optional config keys:
 - `level`: log only messages with this log level
 - `minLevel`: minimum log level to log
 - `maxLevel`: maximum log level to log
-- `filter`: lua method that accepts a level as an argument and returns a boolean, return true to accept the given level
+- `filter`: lua function that accepts a level as an argument and returns a boolean, return true to accept the given level
 
 Example:
 
 ```lua
     console "appenderName" {
         pattern = "%{iso8601}d %l %n - %m",
-        level = ERROR,
+        level = ERROR
     }
 ```
 
