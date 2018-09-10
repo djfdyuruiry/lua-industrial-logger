@@ -31,25 +31,23 @@ local RollingFileAppender = function(name, appenderConfig)
             error(("'maxFileSizeInKb' for RollingFileAppender '%s' is incorrect, value must be greater than zero"):format(name))
         end
 
-        if rolloverConfig.backupFileFormat ~= nil then
-            if type(rolloverConfig.backupFileFormat) ~= "string" then
-                error(("'backupFileFormat' specified for RollingFileAppender '%s' is not a string"):format(name))
-            end
-
-            local potentialFormat = rolloverConfig.backupFileFormat:lower()
-
-            if potentialFormat ~= COPY_FORMAT then
-                if not COMPRESSION_FORMATS[potentialFormat] then
-                    error(("'backupFileFormat' value '%s',specified for RollingFileAppender '%s', is not a supported format on the current OS"):format(potentialFormat, name))
-                end
-
-                backupFileExtension = COMPRESSION_FORMATS[potentialFormat].extension
-            else
-                backupFileExtension = COPY_FORMAT_EXTENSION
-            end
-
-            backupFileFormat = potentialFormat
+        if StringUtils.isBlank(rolloverConfig.backupFileFormat) then
+            error(("'backupFileFormat' for RollingFileAppender '%s' is not a string or missing or blank"):format(name))
         end
+
+        local potentialFormat = rolloverConfig.backupFileFormat:lower()
+
+        if potentialFormat ~= COPY_FORMAT then
+            if not COMPRESSION_FORMATS[potentialFormat] then
+                error(("'backupFileFormat' value '%s',specified for RollingFileAppender '%s', is not a supported format on the current OS"):format(potentialFormat, name))
+            end
+
+            backupFileExtension = COMPRESSION_FORMATS[potentialFormat].extension
+        else
+            backupFileExtension = COPY_FORMAT_EXTENSION
+        end
+
+        backupFileFormat = potentialFormat
 
         if type(rolloverConfig.maxBackupFiles) ~= "number" then
             error(("'maxBackupFiles' is not a number or is missing for RollingFileAppender '%s'"):format(name)) 

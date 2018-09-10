@@ -39,7 +39,7 @@ local powershellIsAvailable = function()
     if type(powershellIsAvailableResult) ~= "boolean" then
 
         powershellIsAvailableResult = (os.execute(
-            ("where powershell %s"):format(getOutputRedirectString(true))
+            ("where powershell.exe %s"):format(getOutputRedirectString(true))
         ) == 0)
     end
 
@@ -71,7 +71,7 @@ local getPowershellVersion = function()
     return version
 end
 
-local assertCommandAvailable = function(command)
+local assertUnixCommandAvailable = function(command)
     DebugLogger.log("asserting command available with command = '%s'", command)
 
     assert(
@@ -83,7 +83,7 @@ local assertCommandAvailable = function(command)
 end
 
 local getUnixZipCompressionUtil = function()
-    assertCommandAvailable("zip")
+    assertUnixCommandAvailable("zip")
 
     DebugLogger.log("get unix zip compression util")
 
@@ -100,7 +100,7 @@ local getUnixZipCompressionUtil = function()
 end
 
 local getUnixTarCompressionUtil = function()
-    assertCommandAvailable("tar")
+    assertUnixCommandAvailable("tar")
 
     DebugLogger.log("get unix tar compression util")
 
@@ -303,7 +303,7 @@ end
 return
 {
     osIsUnixLike = osIsUnixLike,
-    assertCommandAvailable = assertCommandAvailable,
+    assertUnixCommandAvailable = assertUnixCommandAvailable,
     getCompressionUtil = getCompressionUtil,
     compressFilePath = compressFilePath,
     getSupportedCompressionFormats = getSupportedCompressionFormats,

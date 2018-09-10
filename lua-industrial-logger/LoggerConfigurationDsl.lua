@@ -103,7 +103,7 @@ local buildConfigUsingLoaderDsl = function(loaderFunction)
         filter = configPropertySetter(config, "filter"),
         appenders = runAppenderGenerators,
         appender = function(module)
-            return appenderCreator(config, module)
+            return appenderCreator(config, module, module)
         end,
         console = appenderCreator(config, "console", "lua-industrial-logger.ConsoleAppender"),
         file = appenderCreator(config, "file", "lua-industrial-logger.FileAppender"),
