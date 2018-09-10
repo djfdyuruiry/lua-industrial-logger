@@ -90,7 +90,7 @@ Concepts used in **Lua Industrial Logger** should be familiar to anyone who has 
 
 **Patterns** format the output of log lines, for example:
 
-The pattern '`%d %l %n - %m` will output: `Mon Sep 10 20:53:48 2018 INFO  ./test.lua - Hello`
+The pattern `%d %l %n - %m` will output: `Mon Sep 10 20:53:48 2018 INFO  ./test.lua - Hello`
 
 Supported pattern format specifiers:
 
