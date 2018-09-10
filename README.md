@@ -76,7 +76,7 @@ This library uses environment variables to set global config values:
 
 ### Concepts
 
-Concepts used in **Lua Industrial Logger** should be familiar to anyone who has worked with similar libraries: `Appenders`, `Patterns` and `Filters`
+Concepts used in **Lua Industrial Logger** should be familiar to anyone who has worked with similar libraries: `Appenders`, `Patterns` and `Levels`
 
 **Appenders** output log lines to various destinations:
 
