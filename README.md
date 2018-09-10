@@ -110,7 +110,7 @@ Supported pattern format specifiers:
 - `INFO`
 - `WARN`
 - `ERROR`
-- `OFF` - This disables logging if used in a filter
+- `OFF` - This disables logging
 
 ----
 
