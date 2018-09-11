@@ -8,7 +8,9 @@ A pure lua logging framework that follows the conventions of popular frameworks 
 
 Install using [luarocks](https://github.com/luarocks/luarocks/wiki/Download)
 
-`luarocks install --server=http://luarocks.org/dev lua-industrial-logger`
+```shell
+luarocks install --server=http://luarocks.org/dev lua-industrial-logger
+```
 
 To use, import the module and create a new logger instance:
 
