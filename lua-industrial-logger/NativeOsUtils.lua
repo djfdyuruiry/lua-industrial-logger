@@ -259,7 +259,7 @@ local getFilesForPattern = function(directoryPath, filePattern)
         error(("Error listing files in directory '%s' using pattern '%s': %s"):format(directoryPath, filePattern, err or "unknown error"))
     end
 
-    local filesString = listProc:read("*a"):gsub(OsFacts.lastDirectorySeperatorRegex, DIRECTORY_SEPERATOR)
+    local filesString = listProc:read("*a"):gsub(OsFacts.lastDirectorySeperatorRegex, OsFacts.directorySeperator)
 
     DebugLogger.log("result of getting files with directoryPath = '%s' and filePattern = '%s' and filesString = '%s'", directoryPath, filePattern, filesString)
 
