@@ -8,7 +8,7 @@ local FileAppender = function(name, config)
     local logDirectoryCreated = false
 
     local validateConfig = function()
-        DebugLogger.log("validating configuration for appender with name = '%s' and config = '%s'", name, config)
+        DebugLogger.log("validating configuration for appender with name = '%s' and config = '%s'", name, tostring(config))
     
         if type(config) ~= "table" then
             error(("configuration table not supplied for FileAppender '%s'"):format(name))
@@ -25,7 +25,7 @@ local FileAppender = function(name, config)
                 "(set 'createMissingDirectories = true' to automatically create it)"):format(logFileDirectory, name))
         end
 
-        DebugLogger.log("validated configuration for appender with name = '%s' and config = '%s' and logFileDirectory = '%s'", name, config, logFileDirectory)
+        DebugLogger.log("validated configuration for appender with name = '%s' and config = '%s' and logFileDirectory = '%s'", name, tostring(config), logFileDirectory)
     end
 
     validateConfig()

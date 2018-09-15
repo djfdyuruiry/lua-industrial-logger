@@ -64,7 +64,7 @@ local appenderCreator = function(config, defaultName, module)
         return function(appenderConfig)
             config.appenders[name].config = appenderConfig
 
-            DebugLogger.log("config for appender defined in config DSL for appender with name = '%s' and config = '%s'", name, appenderConfig)
+            DebugLogger.log("config for appender defined in config DSL for appender with name = '%s' and config = '%s'", name, tostring(appenderConfig))
         end
     end
 end
@@ -84,10 +84,10 @@ local runAppenderGenerators = function(appenderGenerators)
 end
 
 local configPropertySetter = function(config, propertyName)
-    DebugLogger.log("config property setter declared in config DSL with config = '%s' and propertyName = '%s'", config, propertyName)
+    DebugLogger.log("config property setter declared in config DSL with config = '%s' and propertyName = '%s'", tostring(config), propertyName)
 
     return buildTablePropertySetter(config, propertyName, function(value, index, subIndex)
-        DebugLogger.log("config property value declared in config DSL with propertyName = '%s' and value = '%s' and index = '%s' and subindex = '%s'", propertyName, config, tostring(index), tostring(subIndex))
+        DebugLogger.log("config property value declared in config DSL with propertyName = '%s' and value = '%s' and index = '%s' and subindex = '%s'", propertyName, tostring(config), tostring(index), tostring(subIndex))
     end)
 end
 

@@ -16,7 +16,7 @@ end
 local getOutputRedirectString = function(redirectAllStreams)
     local nullPath = OsFacts.osIsUnixLike() and "/dev/null" or "NUL"
 
-    DebugLogger.log("getting output redirect string with redirectAllStreams = '%s' and nullPath = '%s'", redirectAllStreams, nullPath)
+    DebugLogger.log("getting output redirect string with redirectAllStreams = '%s' and nullPath = '%s'", tostring(redirectAllStreams), nullPath)
 
     if redirectAllStreams then
         return REDIRECT_ALL_OUTPUT:format(nullPath)
@@ -80,7 +80,7 @@ local getUnixZipCompressionUtil = function()
     return function(file, archiveName, removeFiles)
         local removeFilesFlag = removeFiles and "m" or ""
 
-        DebugLogger.log("calling unix zip compression util with file = '%s' and archiveName = '%s' and removeFiles = '%s' and removeFilesFlag = '%s'", file, archiveName, removeFiles, removeFilesFlag)
+        DebugLogger.log("calling unix zip compression util with file = '%s' and archiveName = '%s' and removeFiles = '%s' and removeFilesFlag = '%s'", file, archiveName, tostring(removeFiles), removeFilesFlag)
 
         assert(
             os.execute(("zip -%s9 '%s.zip' '%s' %s"):format(removeFilesFlag, archiveName, file, getOutputRedirectString())), 
@@ -153,7 +153,7 @@ local getCompressionUtil = function(format)
 end
 
 local compressFilePath = function(filePath, archiveName, removeFiles, compressionFomat)
-    DebugLogger.log("compressing file path with file = '%s' and archiveName = '%s' and removeFiles = '%s' and compressionFomat = '%s'", file, archiveName, removeFiles, compressionFomat)
+    DebugLogger.log("compressing file path with file = '%s' and archiveName = '%s' and removeFiles = '%s' and compressionFomat = '%s'", filePath, archiveName, tostring(removeFiles), compressionFomat)
 
     local compressionUtil = getCompressionUtil(compressionFomat)
 
@@ -243,7 +243,7 @@ local getFileListingCommand = function(directoryPath, filePattern)
     DebugLogger.log("get file listing command with directoryPath = '%s' and filePattern = '%s'", directoryPath, filePattern)
 
     if OsFacts.osIsUnixLike() then
-        return ([[echo "%s"/%s]]):format(directoryPath, filePattern)
+        return ([[echo "%s"%s]]):format(directoryPath, filePattern)
     end
 
     return ([[for %%f in ("%s\%s") do @echo | set /p=%%f]]):format(directoryPath, filePattern)
@@ -253,13 +253,16 @@ local getFilesForPattern = function(directoryPath, filePattern)
     DebugLogger.log("getting files with directoryPath = '%s' and filePattern = '%s'", directoryPath, filePattern)
 
     local fileListingCommand = getFileListingCommand(directoryPath, filePattern)
+
+    DebugLogger.log("getting files with fileListingCommand = '%s'", fileListingCommand)
+
     local listProc, err = io.popen(fileListingCommand)
 
     if not listProc or err then
         error(("Error listing files in directory '%s' using pattern '%s': %s"):format(directoryPath, filePattern, err or "unknown error"))
     end
 
-    local filesString = listProc:read("*a"):gsub(OsFacts.lastDirectorySeperatorRegex, OsFacts.directorySeperator)
+    local filesString = listProc:read("*a")
 
     DebugLogger.log("result of getting files with directoryPath = '%s' and filePattern = '%s' and filesString = '%s'", directoryPath, filePattern, filesString)
 

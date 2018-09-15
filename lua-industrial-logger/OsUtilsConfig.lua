@@ -1,4 +1,4 @@
 return
 {
-    module = "LuaOsUtils"
+    module = "NativeOsUtils"
 }

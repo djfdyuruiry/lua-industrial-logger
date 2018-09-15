@@ -1,5 +1,6 @@
 local DebugLogger = require "lua-industrial-logger.DebugLogger"
 local OsFacts = require "lua-industrial-logger.OsFacts"
+local StringUtils = require "lua-industrial-logger.StringUtils"
 
 local useFile = function(filePath, mode, useBlock)
     local file = assert(io.open(filePath, mode))
@@ -68,7 +69,11 @@ local getFileName = function(filePath)
         return filePath
     end
 
-    return filePath:sub(lastSeperatorIndex)
+    local fileName = StringUtils.replacePatternIfPresent(filePath:sub(lastSeperatorIndex), OsFacts.directorySeperator, "")
+
+    DebugLogger.log("get file directory returning with fileName = '%s'", fileName)
+
+    return fileName
 end
 
 local combinePaths = function(left, right)

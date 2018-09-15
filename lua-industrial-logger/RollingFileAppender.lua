@@ -64,13 +64,15 @@ local RollingFileAppender = function(name, appenderConfig)
 
     validateConfig()
 
-    local buildBackupFilePath = function(backupIndex, includeFileExtension)
-        DebugLogger.log("build backup file path with logFilePath = '%s' and backupIndex = '%d' and includeFileExtension = '%s'", logFilePath, backupIndex, includeFileExtension)
+    local buildBackupFilePath = function(backupIndex, includeFileExtension, returnFilenameOnly)
+        DebugLogger.log("build backup file path with logFilePath = '%s' and backupIndex = '%s' and includeFileExtension = '%s'", logFilePath, tostring(backupIndex), tostring(includeFileExtension))
     
-        local backupFileName = StringUtils.concat(logFileName, "-", backupIndex)
+        local backupFilePath = StringUtils.concat(logFileName, "-", backupIndex)
 
-        local backupFilePath = FileUtils.combinePaths(fileAppender.logFileDirectory, backupFileName)
-        
+        if not returnFilenameOnly then
+            backupFilePath = FileUtils.combinePaths(fileAppender.logFileDirectory, backupFilePath)
+        end
+
         if includeFileExtension then
             backupFilePath = string.format("%s.%s", backupFilePath, backupFileExtension)
         end
@@ -94,7 +96,7 @@ local RollingFileAppender = function(name, appenderConfig)
     end
 
     local rolloverLogBackups = function(backupFiles)
-        DebugLogger.log("rolling over log file backups with backupFiles = '%s'", backupFiles)
+        DebugLogger.log("rolling over log file backups with backupFiles = '%s'", tostring(backupFiles))
 
         local oldestBackupFile
         local oldestBackupFileTimestamp = -1
@@ -102,11 +104,15 @@ local RollingFileAppender = function(name, appenderConfig)
         for _, backupFile in ipairs(backupFiles) do
             local fileTimestamp = OsUtils.getFileModificationTime(backupFile)
 
+            DebugLogger.log("log file backup '%s' modification time: %d", backupFile, fileTimestamp)
+
             if oldestBackupFileTimestamp == -1 or oldestBackupFileTimestamp > fileTimestamp then
                 oldestBackupFile = backupFile
                 oldestBackupFileTimestamp = fileTimestamp
             end
         end
+
+        DebugLogger.log("oldest log file backup '%s' with modification time: %d", oldestBackupFile, oldestBackupFileTimestamp)
 
         OsUtils.deleteFile(oldestBackupFile)
     end
@@ -114,12 +120,12 @@ local RollingFileAppender = function(name, appenderConfig)
     local checkIfMaxNumberOfLogBackupsArePresent = function()
         DebugLogger.log("checking if maximum number of backup files reached with logFileName = '%s' and backupFileExtension = '%s' and fileAppender.logFileDirectory = '%s'", logFileName, backupFileExtension, fileAppender.logFileDirectory)
 
-        local backupFilesPattern = StringUtils.concat(logFileName, "-*.", backupFileExtension)
-        local backupFilesPresent = OsUtils.getFilesForPattern(fileAppender.logFileDirectory, backupFilesPattern)
+        local maxBackupFilePattern = buildBackupFilePath("*", true, true)
+        local backupFilesPresent = OsUtils.getFilesForPattern(fileAppender.logFileDirectory, maxBackupFilePattern)
 
         maxLogBackupsArePresent = #backupFilesPresent >= maxBackupFiles
     
-        DebugLogger.log("check for maximum number of backup files returning with maxLogBackupsArePresent = '%s'", maxLogBackupsArePresent)
+        DebugLogger.log("check for maximum number of backup files returning with maxLogBackupsArePresent = '%s'", tostring(maxLogBackupsArePresent))
         
         return maxLogBackupsArePresent, backupFilesPresent
     end
@@ -127,14 +133,13 @@ local RollingFileAppender = function(name, appenderConfig)
     local rolloverLogFile = function()
         DebugLogger.log("rolling over log file")
 
-        local maxBackupFilePath = buildBackupFilePath(maxBackupFiles, true)
         local maxLogBackupsArePresent, backupFiles = checkIfMaxNumberOfLogBackupsArePresent()
 
         if maxLogBackupsArePresent then
             rolloverLogBackups(backupFiles)
         end
 
-        DebugLogger.log("backing up log file with logFilePath = '%s' and backupFilePath = '%s' and backupFileFormat = '%s'", logFilePath, backupFilePath, backupFileFormat)
+        DebugLogger.log("backing up log file with logFilePath = '%s' and backupFilePath = '%s' and backupFileFormat = '%s'", logFilePath, tostring(backupFilePath), backupFileFormat)
 
         if backupFileFormat ~= COPY_FORMAT then
             OsUtils.compressFilePath(
