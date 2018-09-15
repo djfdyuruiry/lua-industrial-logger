@@ -7,7 +7,7 @@ local ConsoleAppender = function(name, appenderConfig)
     local outputStream
 
     local validateConfig = function()
-        DebugLogger.log("validating configuration for appender with name = '%s' and config = '%s'", name, config)
+        DebugLogger.log("validating configuration for appender with name = '%s' and config = '%s'", name, tostring(config))
 
         local outputStreamName = not StringUtils.isBlank(config.stream) and config.stream or "stdout"
 
@@ -22,7 +22,7 @@ local ConsoleAppender = function(name, appenderConfig)
             )
         end
 
-        DebugLogger.log("validated configuration for appender with name = '%s' and config = '%s' and outputStream = '%s'", name, config, outputStream)
+        DebugLogger.log("validated configuration for appender with name = '%s' and config = '%s' and outputStream = '%s'", name, tostring(config), tostring(outputStream))
     end
 
     validateConfig()
@@ -50,6 +50,7 @@ local ConsoleAppender = function(name, appenderConfig)
     return
     {
         append = append,
+        name = name,
         config = config
     }
 end

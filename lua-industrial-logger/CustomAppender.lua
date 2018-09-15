@@ -11,6 +11,7 @@ local CustomAppender = function(name, appenderConfig)
     return
     {
         append = append,
+        name = name,
         config = config
     }
 end

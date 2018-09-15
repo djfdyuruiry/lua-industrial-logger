@@ -163,7 +163,9 @@ local RollingFileAppender = function(name, appenderConfig)
 
     return
     {
-        append = append
+        append = append,
+        name = name,
+        config = appenderConfig
     }
 end
 

@@ -46,6 +46,7 @@ local FileAppender = function(name, config)
     return
     {
         append = append,
+        name = name,
         config = config,
         logFileDirectory = logFileDirectory
     }
