@@ -1,8 +1,5 @@
-local DIRECTORY_SEPERATOR = package.config:sub(1, 1)
-local DIRECTORY_SEPERATOR_REGEX = ("[%s]+"):format(DIRECTORY_SEPERATOR)
-local LAST_SEPERATOR_REGEX = ([[^.*()%s]]):format(DIRECTORY_SEPERATOR)
-
 local DebugLogger = require "lua-industrial-logger.DebugLogger"
+local OsFacts = require "lua-industrial-logger.OsFacts"
 
 local useFile = function(filePath, mode, useBlock)
     local file = assert(io.open(filePath, mode))
@@ -53,10 +50,10 @@ end
 local getFileDirectory = function(filePath)
     DebugLogger.log("get file directory with filePath = '%s'", filePath)
 
-    local lastSeperatorIndex = filePath:match(LAST_SEPERATOR_REGEX)
+    local lastSeperatorIndex = filePath:match(OsFacts.lastDirectorySeperatorRegex)
 
     if not lastSeperatorIndex then
-        return string.format(".%s", DIRECTORY_SEPERATOR)
+        return string.format(".%s", OsFacts.directorySeperator)
     end
 
     return filePath:sub(0, lastSeperatorIndex)
@@ -65,7 +62,7 @@ end
 local getFileName = function(filePath)
     DebugLogger.log("get file directory with filePath = '%s'", filePath)
 
-    local lastSeperatorIndex = filePath:match(LAST_SEPERATOR_REGEX)
+    local lastSeperatorIndex = filePath:match(OsFacts.lastDirectorySeperatorRegex)
 
     if not lastSeperatorIndex then
         return filePath
@@ -77,7 +74,7 @@ end
 local combinePaths = function(left, right)
     DebugLogger.log("combine paths with left = '%s' and right = '%s'", left, right)
 
-    return string.format("%s%s%s", left, DIRECTORY_SEPERATOR, right):gsub(DIRECTORY_SEPERATOR_REGEX, DIRECTORY_SEPERATOR)
+    return string.format("%s%s%s", left, OsFacts.directorySeperator, right):gsub(OsFacts.directorySeperatorRegex, OsFacts.directorySeperator)
 end
 
 return
