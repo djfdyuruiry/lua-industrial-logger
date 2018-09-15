@@ -286,8 +286,6 @@ end
 
 return
 {
-    assertUnixCommandAvailable = assertUnixCommandAvailable,
-    getCompressionUtil = getCompressionUtil,
     compressFilePath = compressFilePath,
     getSupportedCompressionFormats = getSupportedCompressionFormats,
     directoryExists = directoryExists,
