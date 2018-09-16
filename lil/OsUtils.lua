@@ -1,6 +1,6 @@
-local DebugLogger = require "lua-industrial-logger.DebugLogger"
-local OsUtilsConfig = require "lua-industrial-logger.OsUtilsConfig"
-local StringUtils = require "lua-industrial-logger.StringUtils"
+local DebugLogger = require "lil.DebugLogger"
+local OsUtilsConfig = require "lil.OsUtilsConfig"
+local StringUtils = require "lil.StringUtils"
 
 local osUtils
 
@@ -9,7 +9,7 @@ local initOsUtils = function()
         return
     end
 
-    osUtils = require(string.format("lua-industrial-logger.%s", OsUtilsConfig.module))
+    osUtils = require(string.format("lil.%s", OsUtilsConfig.module))
 end
 
 local compressFilePath = function(filePath, archiveName, removeFiles, compressionFomat)

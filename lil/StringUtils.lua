@@ -1,4 +1,4 @@
-local DebugLogger = require "lua-industrial-logger.DebugLogger"
+local DebugLogger = require "lil.DebugLogger"
 
 local contains = function(subject, subString)
     return string.find(subject, subString, 1, true)

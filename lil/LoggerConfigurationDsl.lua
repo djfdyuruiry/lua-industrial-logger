@@ -1,7 +1,7 @@
-local setfenv = require "lua-industrial-logger.polyfills.setfenv"
+local setfenv = require "lil.polyfills.setfenv"
 
-local DebugLogger = require "lua-industrial-logger.DebugLogger"
-local Levels = require "lua-industrial-logger.Levels"
+local DebugLogger = require "lil.DebugLogger"
+local Levels = require "lil.Levels"
 
 local buildTablePropertySetter = function(rootTbl, rootIdx, callback)
     if type(callback) ~= "function" then
@@ -105,9 +105,9 @@ local buildConfigUsingLoaderDsl = function(loaderFunction)
         appender = function(module)
             return appenderCreator(config, module, module)
         end,
-        console = appenderCreator(config, "console", "lua-industrial-logger.ConsoleAppender"),
-        file = appenderCreator(config, "file", "lua-industrial-logger.FileAppender"),
-        rollingFile = appenderCreator(config, "rollingFile", "lua-industrial-logger.RollingFileAppender")
+        console = appenderCreator(config, "console", "lil.ConsoleAppender"),
+        file = appenderCreator(config, "file", "lil.FileAppender"),
+        rollingFile = appenderCreator(config, "rollingFile", "lil.RollingFileAppender")
     }
 
     for level, levelAsInt in pairs(Levels) do

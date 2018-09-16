@@ -1,6 +1,6 @@
 MAX_ID_LENGTH = 10
 
-local DebugLogger = require "lua-industrial-logger.DebugLogger"
+local DebugLogger = require "lil.DebugLogger"
 
 local generateNonUniqueId = function()
     DebugLogger.log("generateNonUniqueId")

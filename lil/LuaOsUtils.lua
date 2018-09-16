@@ -1,10 +1,10 @@
 local lfs = require "lfs"
 
-local DebugLogger = require "lua-industrial-logger.DebugLogger"
-local FileUtils = require "lua-industrial-logger.FileUtils"
-local NativeOsUtils = require "lua-industrial-logger.NativeOsUtils"
-local OsFacts = require "lua-industrial-logger.OsFacts"
-local StringUtils = require "lua-industrial-logger.StringUtils"
+local DebugLogger = require "lil.DebugLogger"
+local FileUtils = require "lil.FileUtils"
+local NativeOsUtils = require "lil.NativeOsUtils"
+local OsFacts = require "lil.OsFacts"
+local StringUtils = require "lil.StringUtils"
 
 local directoryExists = function(directoryPath)
     local directoryPathAttributes, pathError = lfs.attributes(directoryPath)

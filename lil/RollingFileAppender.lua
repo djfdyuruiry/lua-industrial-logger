@@ -1,8 +1,8 @@
-local DebugLogger = require "lua-industrial-logger.DebugLogger"
-local FileAppender = require "lua-industrial-logger.FileAppender"
-local FileUtils = require "lua-industrial-logger.FileUtils"
-local OsUtils = require "lua-industrial-logger.OsUtils"
-local StringUtils = require "lua-industrial-logger.StringUtils"
+local DebugLogger = require "lil.DebugLogger"
+local FileAppender = require "lil.FileAppender"
+local FileUtils = require "lil.FileUtils"
+local OsUtils = require "lil.OsUtils"
+local StringUtils = require "lil.StringUtils"
 
 local COPY_FORMAT = "copy"
 local COPY_FORMAT_EXTENSION = "bak"

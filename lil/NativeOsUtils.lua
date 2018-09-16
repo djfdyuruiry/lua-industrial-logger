@@ -1,6 +1,6 @@
-local DebugLogger = require "lua-industrial-logger.DebugLogger"
-local StringUtils = require "lua-industrial-logger.StringUtils"
-local OsFacts = require "lua-industrial-logger.OsFacts"
+local DebugLogger = require "lil.DebugLogger"
+local StringUtils = require "lil.StringUtils"
+local OsFacts = require "lil.OsFacts"
 
 local DEFAULT_COMPRESSION_FORMAT = "zip"
 local REDIRECT_OUTPUT = "> %s"

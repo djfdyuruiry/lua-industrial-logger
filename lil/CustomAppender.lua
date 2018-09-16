@@ -1,4 +1,4 @@
-local DebugLogger = require "lua-industrial-logger.DebugLogger"
+local DebugLogger = require "lil.DebugLogger"
 
 local CustomAppender = function(name, appenderConfig)
     local config = appenderConfig or {}

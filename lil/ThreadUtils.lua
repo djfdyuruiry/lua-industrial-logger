@@ -1,5 +1,5 @@
-local DebugLogger = require "lua-industrial-logger.DebugLogger"
-local IdUtils = require "lua-industrial-logger.IdUtils"
+local DebugLogger = require "lil.DebugLogger"
+local IdUtils = require "lil.IdUtils"
 
 local THREAD_ID = IdUtils.generateNonUniqueId()
 

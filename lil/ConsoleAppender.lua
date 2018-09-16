@@ -1,6 +1,6 @@
-local AnsiDecoratedStringBuilder = require "lua-industrial-logger.AnsiDecoratedStringBuilder"
-local DebugLogger = require "lua-industrial-logger.DebugLogger"
-local StringUtils = require "lua-industrial-logger.StringUtils"
+local AnsiDecoratedStringBuilder = require "lil.AnsiDecoratedStringBuilder"
+local DebugLogger = require "lil.DebugLogger"
+local StringUtils = require "lil.StringUtils"
 
 local ConsoleAppender = function(name, appenderConfig)
     local config = appenderConfig or {}

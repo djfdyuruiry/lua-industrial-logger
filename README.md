@@ -1,4 +1,4 @@
-# Lua Industrial Logger
+# Lua Industrial Logger (LIL)
 
 A pure lua logging framework that follows the conventions of popular frameworks like `logback`, `log4net` and `log4j`. Configuration uses a Lua based DSL for ease of use and flexibility.
 
@@ -9,13 +9,13 @@ A pure lua logging framework that follows the conventions of popular frameworks 
 Install using [luarocks](https://github.com/luarocks/luarocks/wiki/Download)
 
 ```shell
-luarocks install --server=http://luarocks.org/dev lua-industrial-logger
+luarocks install --server=http://luarocks.org/dev lil
 ```
 
 To use, import the module and create a new logger instance:
 
 ```lua
-local LoggerFactory = require "lua-industrial-logger.LoggerFactory"
+local LoggerFactory = require "lil.LoggerFactory"
 
 local logger = LoggerFactory.getLogger()
 ```

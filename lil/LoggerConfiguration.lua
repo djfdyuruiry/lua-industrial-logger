@@ -1,13 +1,13 @@
-local loadstring = require "lua-industrial-logger.polyfills.loadstring"
+local loadstring = require "lil.polyfills.loadstring"
 
-local DebugLogger = require "lua-industrial-logger.DebugLogger"
-local Levels = require "lua-industrial-logger.Levels"
-local LoggerFactory = require "lua-industrial-logger.LoggerFactory"
-local StringUtils = require "lua-industrial-logger.StringUtils"
+local DebugLogger = require "lil.DebugLogger"
+local Levels = require "lil.Levels"
+local LoggerFactory = require "lil.LoggerFactory"
+local StringUtils = require "lil.StringUtils"
 
 local CONFIG_LOADER_ENV_VAR = "LUA_LOG_CFG_LOADER"
 local DEFAULT_PATTERN = "%{iso8601}d [%t] %l %n - %m"
-local DEFAULT_CONFIG_LOADER = "lua-industrial-logger.FileConfigurationLoader"
+local DEFAULT_CONFIG_LOADER = "lil.FileConfigurationLoader"
 
 local loggerConfig = nil
 
@@ -42,7 +42,7 @@ local initConfig = function(configFieldsToSet)
         {
             console =
             {
-                module = "lua-industrial-logger.ConsoleAppender"
+                module = "lil.ConsoleAppender"
             }
         }
     }

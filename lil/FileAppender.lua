@@ -1,7 +1,7 @@
-local DebugLogger = require "lua-industrial-logger.DebugLogger"
-local FileUtils = require "lua-industrial-logger.FileUtils"
-local OsUtils = require "lua-industrial-logger.OsUtils"
-local StringUtils = require "lua-industrial-logger.StringUtils"
+local DebugLogger = require "lil.DebugLogger"
+local FileUtils = require "lil.FileUtils"
+local OsUtils = require "lil.OsUtils"
+local StringUtils = require "lil.StringUtils"
 
 local FileAppender = function(name, config)
     local logFileDirectory

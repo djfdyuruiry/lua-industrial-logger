@@ -1,10 +1,10 @@
-local loadstring = require "lua-industrial-logger.polyfills.loadstring"
+local loadstring = require "lil.polyfills.loadstring"
 
-local DebugLogger = require "lua-industrial-logger.DebugLogger"
-local LoggerConfigurationDsl = require "lua-industrial-logger.LoggerConfigurationDsl"
-local LoggerFactory = require "lua-industrial-logger.LoggerFactory"
-local FileUtils = require "lua-industrial-logger.FileUtils"
-local StringUtils = require "lua-industrial-logger.StringUtils"
+local DebugLogger = require "lil.DebugLogger"
+local LoggerConfigurationDsl = require "lil.LoggerConfigurationDsl"
+local LoggerFactory = require "lil.LoggerFactory"
+local FileUtils = require "lil.FileUtils"
+local StringUtils = require "lil.StringUtils"
 
 local CONFIG_FILE_ENV_VAR = "LUA_LOG_CFG_FILE"
 local DEFAULT_CONFIG_FILE_PATH = "logger.lua.config"

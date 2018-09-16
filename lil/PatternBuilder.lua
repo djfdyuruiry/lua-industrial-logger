@@ -1,6 +1,6 @@
-local DebugLogger = require "lua-industrial-logger.DebugLogger"
-local PatternGeneratorMap = require("lua-industrial-logger.PatternGeneratorMap")
-local StringUtils = require ("lua-industrial-logger.StringUtils")
+local DebugLogger = require "lil.DebugLogger"
+local PatternGeneratorMap = require("lil.PatternGeneratorMap")
+local StringUtils = require ("lil.StringUtils")
 
 local PatternBuilder = function(loggerName, creator)
     local buildLogMessageFromPattern = function (pattern, level, message)

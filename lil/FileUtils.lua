@@ -1,6 +1,6 @@
-local DebugLogger = require "lua-industrial-logger.DebugLogger"
-local OsFacts = require "lua-industrial-logger.OsFacts"
-local StringUtils = require "lua-industrial-logger.StringUtils"
+local DebugLogger = require "lil.DebugLogger"
+local OsFacts = require "lil.OsFacts"
+local StringUtils = require "lil.StringUtils"
 
 local useFile = function(filePath, mode, useBlock)
     local file = assert(io.open(filePath, mode))
