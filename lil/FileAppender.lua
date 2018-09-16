@@ -1,14 +1,14 @@
-local DebugLogger = require "lua-industrial-logger.DebugLogger"
-local FileUtils = require "lua-industrial-logger.FileUtils"
-local OsUtils = require "lua-industrial-logger.OsUtils"
-local StringUtils = require "lua-industrial-logger.StringUtils"
+local DebugLogger = require "lil.DebugLogger"
+local FileUtils = require "lil.FileUtils"
+local OsUtils = require "lil.OsUtils"
+local StringUtils = require "lil.StringUtils"
 
 local FileAppender = function(name, config)
     local logFileDirectory
     local logDirectoryCreated = false
 
     local validateConfig = function()
-        DebugLogger.log("validating configuration for appender with name = '%s' and config = '%s'", name, config)
+        DebugLogger.log("validating configuration for appender with name = '%s' and config = '%s'", name, tostring(config))
     
         if type(config) ~= "table" then
             error(("configuration table not supplied for FileAppender '%s'"):format(name))
@@ -25,7 +25,7 @@ local FileAppender = function(name, config)
                 "(set 'createMissingDirectories = true' to automatically create it)"):format(logFileDirectory, name))
         end
 
-        DebugLogger.log("validated configuration for appender with name = '%s' and config = '%s' and logFileDirectory = '%s'", name, config, logFileDirectory)
+        DebugLogger.log("validated configuration for appender with name = '%s' and config = '%s' and logFileDirectory = '%s'", name, tostring(config), logFileDirectory)
     end
 
     validateConfig()
@@ -46,6 +46,7 @@ local FileAppender = function(name, config)
     return
     {
         append = append,
+        name = name,
         config = config,
         logFileDirectory = logFileDirectory
     }

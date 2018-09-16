@@ -1,32 +1,22 @@
-local DebugLogger = require "lua-industrial-logger.DebugLogger"
-local StringUtils = require "lua-industrial-logger.StringUtils"
+local DebugLogger = require "lil.DebugLogger"
+local StringUtils = require "lil.StringUtils"
+local OsFacts = require "lil.OsFacts"
 
-local DIRECTORY_SEPERATOR = package.config:sub(1, 1)
-local DIRECTORY_SEPERATOR_REGEX = ("[%s]+"):format(DIRECTORY_SEPERATOR)
-local DEFAULT_COMPRESSION_FORMAT = "tar"
+local DEFAULT_COMPRESSION_FORMAT = "zip"
 local REDIRECT_OUTPUT = "> %s"
 local REDIRECT_ALL_OUTPUT = "> %s 2>&1"
 
-local osIsUnixLikeResult
 local powershellIsAvailableResult
 local powershellVersionDetected
-
-local osIsUnixLike = function()
-    if type(osIsUnixLikeResult) ~= "boolean" then
-        osIsUnixLikeResult = DIRECTORY_SEPERATOR == "/"
-    end
-
-    return osIsUnixLikeResult
-end
 
 local getPowershellCommand = function(powershellString)
     return ([[powershell -Command "%s"]]):format(powershellString)
 end
 
 local getOutputRedirectString = function(redirectAllStreams)
-    local nullPath = osIsUnixLike() and "/dev/null" or "NUL"
+    local nullPath = OsFacts.osIsUnixLike() and "/dev/null" or "NUL"
 
-    DebugLogger.log("getting output redirect string with redirectAllStreams = '%s' and nullPath = '%s'", redirectAllStreams, nullPath)
+    DebugLogger.log("getting output redirect string with redirectAllStreams = '%s' and nullPath = '%s'", tostring(redirectAllStreams), nullPath)
 
     if redirectAllStreams then
         return REDIRECT_ALL_OUTPUT:format(nullPath)
@@ -90,7 +80,7 @@ local getUnixZipCompressionUtil = function()
     return function(file, archiveName, removeFiles)
         local removeFilesFlag = removeFiles and "m" or ""
 
-        DebugLogger.log("calling unix zip compression util with file = '%s' and archiveName = '%s' and removeFiles = '%s' and removeFilesFlag = '%s'", file, archiveName, removeFiles, removeFilesFlag)
+        DebugLogger.log("calling unix zip compression util with file = '%s' and archiveName = '%s' and removeFiles = '%s' and removeFilesFlag = '%s'", file, archiveName, tostring(removeFiles), removeFilesFlag)
 
         assert(
             os.execute(("zip -%s9 '%s.zip' '%s' %s"):format(removeFilesFlag, archiveName, file, getOutputRedirectString())), 
@@ -147,7 +137,7 @@ end
 local getCompressionUtil = function(format)
     format = format or DEFAULT_COMPRESSION_FORMAT
 
-    if not osIsUnixLike() then
+    if not OsFacts.osIsUnixLike() then
         return getPowershellCompressionUtil(format)
     end
 
@@ -163,7 +153,7 @@ local getCompressionUtil = function(format)
 end
 
 local compressFilePath = function(filePath, archiveName, removeFiles, compressionFomat)
-    DebugLogger.log("compressing file path with file = '%s' and archiveName = '%s' and removeFiles = '%s' and compressionFomat = '%s'", file, archiveName, removeFiles, compressionFomat)
+    DebugLogger.log("compressing file path with file = '%s' and archiveName = '%s' and removeFiles = '%s' and compressionFomat = '%s'", filePath, archiveName, tostring(removeFiles), compressionFomat)
 
     local compressionUtil = getCompressionUtil(compressionFomat)
 
@@ -181,7 +171,7 @@ local getSupportedCompressionFormats = function()
         }
     }
 
-    if osIsUnixLike() then
+    if OsFacts.osIsUnixLike() then
         supportedFormats.tar = 
         { 
             extension = "gz.tar"
@@ -202,7 +192,7 @@ end
 local createDirectory = function(directoryPath)
     local createMissingPathsFlag = ""
 
-    if osIsUnixLike() then
+    if OsFacts.osIsUnixLike() then
         createMissingPathsFlag = "-p"
     end
 
@@ -217,7 +207,7 @@ end
 local getFileModificationTimeCommand = function(filePath)
     DebugLogger.log("get file modification time command with filePath = '%s'", filePath)
 
-    if osIsUnixLike() then
+    if OsFacts.osIsUnixLike() then
         return ([[date -r "%s" +%%s]]):format(filePath)
     end
 
@@ -252,8 +242,8 @@ end
 local getFileListingCommand = function(directoryPath, filePattern)
     DebugLogger.log("get file listing command with directoryPath = '%s' and filePattern = '%s'", directoryPath, filePattern)
 
-    if osIsUnixLike() then
-        return ([[echo "%s"/%s]]):format(directoryPath, filePattern)
+    if OsFacts.osIsUnixLike() then
+        return ([[echo "%s"%s]]):format(directoryPath, filePattern)
     end
 
     return ([[for %%f in ("%s\%s") do @echo | set /p=%%f]]):format(directoryPath, filePattern)
@@ -263,13 +253,16 @@ local getFilesForPattern = function(directoryPath, filePattern)
     DebugLogger.log("getting files with directoryPath = '%s' and filePattern = '%s'", directoryPath, filePattern)
 
     local fileListingCommand = getFileListingCommand(directoryPath, filePattern)
+
+    DebugLogger.log("getting files with fileListingCommand = '%s'", fileListingCommand)
+
     local listProc, err = io.popen(fileListingCommand)
 
     if not listProc or err then
         error(("Error listing files in directory '%s' using pattern '%s': %s"):format(directoryPath, filePattern, err or "unknown error"))
     end
 
-    local filesString = listProc:read("*a"):gsub(DIRECTORY_SEPERATOR_REGEX, DIRECTORY_SEPERATOR)
+    local filesString = listProc:read("*a")
 
     DebugLogger.log("result of getting files with directoryPath = '%s' and filePattern = '%s' and filesString = '%s'", directoryPath, filePattern, filesString)
 
@@ -279,7 +272,7 @@ end
 local getMoveFileCommand = function()
     DebugLogger.log("get move file command")
 
-    if osIsUnixLike() then
+    if OsFacts.osIsUnixLike() then
         return [[mv -f "%s" "%s"]]
     else
         return [[move /Y "%s" "%s"]]
@@ -294,23 +287,13 @@ local moveFile = function(originalFilePath, newFilePath)
     assert(os.execute(moveFileCommand))
 end
 
-local deleteFile = function(filePath)
-    DebugLogger.log("delete file with filePath = '%s'", filePath)
-
-    assert(os.remove(filePath))
-end
-
 return
 {
-    osIsUnixLike = osIsUnixLike,
-    assertUnixCommandAvailable = assertUnixCommandAvailable,
-    getCompressionUtil = getCompressionUtil,
     compressFilePath = compressFilePath,
     getSupportedCompressionFormats = getSupportedCompressionFormats,
     directoryExists = directoryExists,
     createDirectory = createDirectory,
     getFileModificationTime = getFileModificationTime,
     getFilesForPattern = getFilesForPattern,
-    moveFile = moveFile,
-    deleteFile = deleteFile
+    moveFile = moveFile
 }

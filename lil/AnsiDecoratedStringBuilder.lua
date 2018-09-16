@@ -1,4 +1,4 @@
-local DebugLogger = require "lua-industrial-logger.DebugLogger"
+local DebugLogger = require "lil.DebugLogger"
 
 local CODE_MAP = 
 {

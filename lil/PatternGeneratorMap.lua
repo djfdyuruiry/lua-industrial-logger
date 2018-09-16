@@ -1,5 +1,5 @@
-local DebugLogger = require "lua-industrial-logger.DebugLogger"
-local ThreadUtils = require("lua-industrial-logger.ThreadUtils")
+local DebugLogger = require "lil.DebugLogger"
+local ThreadUtils = require("lil.ThreadUtils")
 
 local PATTERN_GENERATOR_MAP = 
 {

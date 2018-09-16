@@ -1,15 +1,15 @@
-local DebugLogger = require "lua-industrial-logger.DebugLogger"
-local Levels = require "lua-industrial-logger.Levels"
-local PatternBuilder = require "lua-industrial-logger.PatternBuilder"
+local DebugLogger = require "lil.DebugLogger"
+local Levels = require "lil.Levels"
+local PatternBuilder = require "lil.PatternBuilder"
 
 local Logger = function(name, creator, loggerConfig)
     local patternBuilder = PatternBuilder(name, creator)
     local defaultPattern = loggerConfig.pattern
 
-    DebugLogger.log("created logger with name = '%s' and creator = '%s' and loggerConfig = '%s'", name, creator, loggerConfig)
+    DebugLogger.log("created logger with name = '%s' and creator = '%s' and loggerConfig = '%s'", name, creator, tostring(loggerConfig))
 
     local buildLogMessageFromAppenderPattern = function(appender, level, formattedMessage)
-        DebugLogger.log("building log message with appender = '%s' and level = '%s' and formattedMessage = '%s'", appender, level, formattedMessage)
+        DebugLogger.log("building log message with appender = '%s' and level = '%s' and formattedMessage = '%s'", appender.name, level, formattedMessage)
 
         if type(appender.config) == "table" and appender.config.pattern then
             message = patternBuilder.buildLogMessageFromPattern(appender.config.pattern, level, formattedMessage)
@@ -37,7 +37,7 @@ local Logger = function(name, creator, loggerConfig)
             return nil
         end
 
-        DebugLogger.log("checking if log level is accepted with config = '%s' and configName = '%s' and level = '%s'", config, configName, level)
+        DebugLogger.log("checking if log level is accepted with config = '%s' and configName = '%s' and level = '%s'", tostring(config), configName, level)
     
         local levelAccepted = nil
         
@@ -69,7 +69,7 @@ local Logger = function(name, creator, loggerConfig)
             end
         end
         
-        DebugLogger.log("checking if log level is accepted returning with levelAccepted = '%s'", levelAccepted)
+        DebugLogger.log("checking if log level is accepted returning with levelAccepted = '%s'", tostring(levelAccepted))
     
         return levelAccepted
     end
@@ -88,7 +88,7 @@ local Logger = function(name, creator, loggerConfig)
                 appenderAcceptedLevel = configAcceptedLevel
             end
 
-            DebugLogger.log("checked if log level accepted by appender with appenderAcceptedLevel = '%s' and appenderName = '%s' and levelValue = '%s'", appenderAcceptedLevel, appenderName, levelValue)
+            DebugLogger.log("checked if log level accepted by appender with appenderAcceptedLevel = '%s' and appenderName = '%s' and levelValue = '%s'", tostring(appenderAcceptedLevel), appenderName, levelValue)
             
             if appenderAcceptedLevel then
                 formattedMessage = formattedMessage or formatMessage(logMessage, ...)

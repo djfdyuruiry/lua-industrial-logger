@@ -1,10 +1,10 @@
-local loadstring = require "lua-industrial-logger.polyfills.loadstring"
+local loadstring = require "lil.polyfills.loadstring"
 
-local DebugLogger = require "lua-industrial-logger.DebugLogger"
-local LoggerConfigurationDsl = require "lua-industrial-logger.LoggerConfigurationDsl"
-local LoggerFactory = require "lua-industrial-logger.LoggerFactory"
-local FileUtils = require "lua-industrial-logger.FileUtils"
-local StringUtils = require "lua-industrial-logger.StringUtils"
+local DebugLogger = require "lil.DebugLogger"
+local LoggerConfigurationDsl = require "lil.LoggerConfigurationDsl"
+local LoggerFactory = require "lil.LoggerFactory"
+local FileUtils = require "lil.FileUtils"
+local StringUtils = require "lil.StringUtils"
 
 local CONFIG_FILE_ENV_VAR = "LUA_LOG_CFG_FILE"
 local DEFAULT_CONFIG_FILE_PATH = "logger.lua.config"
@@ -32,7 +32,7 @@ local executeConfigLoader = function(configLoader)
 end
 
 local buildConfigLoaderForFile = function(configFile)
-    DebugLogger.log("building config loader with configFile = '%s'", configFile)
+    DebugLogger.log("building config loader with configFile = '%s'", tostring(configFile))
 
     local configLua = configFile:read("*all")
 
@@ -47,7 +47,7 @@ local buildConfigLoaderForFile = function(configFile)
         )
     end
 
-    DebugLogger.log("build config loader from file with configLoader = '%s' and configLua = '%s'", configLoader, configLua)
+    DebugLogger.log("build config loader from file with configLoader = '%s' and configLua = '%s'", tostring(configLoader), configLua)
 
     return configLoader, configLua
 end
@@ -78,7 +78,7 @@ local getConfigFilePath = function()
         error(string.format("Unable to load logger config file path from environment variable '%s': value is blank", CONFIG_FILE_ENV_VAR))
     end
     
-    DebugLogger.log("loaded config file path with envConfigFilePath = '%s'", envConfigFilePath)
+    DebugLogger.log("loaded config file path with envConfigFilePath = '%s'", tostring(envConfigFilePath))
 
     return envConfigFilePath
 end
@@ -88,7 +88,7 @@ local loadConfigFromFile = function(postLoadConfigCallback)
         error("parameter 'postLoadConfigCallback' passed to 'loadConfigFromFile' is not a function")
     end
 
-    DebugLogger.log("loadConfigFromFile with postLoadConfigCallback = '%s'", postLoadConfigCallback)
+    DebugLogger.log("loadConfigFromFile with postLoadConfigCallback = '%s'", tostring(postLoadConfigCallback))
 
     local configFilePath = getConfigFilePath() or DEFAULT_CONFIG_FILE_PATH
     local noFileToLoad, configFile = openConfigFile(configFilePath)

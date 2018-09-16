@@ -1,7 +1,7 @@
-local setfenv = require "lua-industrial-logger.polyfills.setfenv"
+local setfenv = require "lil.polyfills.setfenv"
 
-local DebugLogger = require "lua-industrial-logger.DebugLogger"
-local Levels = require "lua-industrial-logger.Levels"
+local DebugLogger = require "lil.DebugLogger"
+local Levels = require "lil.Levels"
 
 local buildTablePropertySetter = function(rootTbl, rootIdx, callback)
     if type(callback) ~= "function" then
@@ -64,7 +64,7 @@ local appenderCreator = function(config, defaultName, module)
         return function(appenderConfig)
             config.appenders[name].config = appenderConfig
 
-            DebugLogger.log("config for appender defined in config DSL for appender with name = '%s' and config = '%s'", name, appenderConfig)
+            DebugLogger.log("config for appender defined in config DSL for appender with name = '%s' and config = '%s'", name, tostring(appenderConfig))
         end
     end
 end
@@ -84,10 +84,10 @@ local runAppenderGenerators = function(appenderGenerators)
 end
 
 local configPropertySetter = function(config, propertyName)
-    DebugLogger.log("config property setter declared in config DSL with config = '%s' and propertyName = '%s'", config, propertyName)
+    DebugLogger.log("config property setter declared in config DSL with config = '%s' and propertyName = '%s'", tostring(config), propertyName)
 
     return buildTablePropertySetter(config, propertyName, function(value, index, subIndex)
-        DebugLogger.log("config property value declared in config DSL with propertyName = '%s' and value = '%s' and index = '%s' and subindex = '%s'", propertyName, config, tostring(index), tostring(subIndex))
+        DebugLogger.log("config property value declared in config DSL with propertyName = '%s' and value = '%s' and index = '%s' and subindex = '%s'", propertyName, tostring(config), tostring(index), tostring(subIndex))
     end)
 end
 
@@ -105,9 +105,9 @@ local buildConfigUsingLoaderDsl = function(loaderFunction)
         appender = function(module)
             return appenderCreator(config, module, module)
         end,
-        console = appenderCreator(config, "console", "lua-industrial-logger.ConsoleAppender"),
-        file = appenderCreator(config, "file", "lua-industrial-logger.FileAppender"),
-        rollingFile = appenderCreator(config, "rollingFile", "lua-industrial-logger.RollingFileAppender")
+        console = appenderCreator(config, "console", "lil.ConsoleAppender"),
+        file = appenderCreator(config, "file", "lil.FileAppender"),
+        rollingFile = appenderCreator(config, "rollingFile", "lil.RollingFileAppender")
     }
 
     for level, levelAsInt in pairs(Levels) do

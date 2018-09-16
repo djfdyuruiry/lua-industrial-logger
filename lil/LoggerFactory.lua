@@ -1,9 +1,9 @@
-local DebugLogger = require "lua-industrial-logger.DebugLogger"
-local IdUtils = require "lua-industrial-logger.IdUtils"
-local Logger = require "lua-industrial-logger.Logger"
+local DebugLogger = require "lil.DebugLogger"
+local IdUtils = require "lil.IdUtils"
+local Logger = require "lil.Logger"
 
 local getLogger = function(name)
-    local loggerConfig = require("lua-industrial-logger.LoggerConfiguration").getConfig()
+    local loggerConfig = require("lil.LoggerConfiguration").getConfig()
 
     local caller = debug.getinfo(2).short_src
     local loggerName = name and name or caller or string.format("{logger-#%s}", IdUtils.generateNonUniqueId())

@@ -1,9 +1,13 @@
-local DebugLogger = require "lua-industrial-logger.DebugLogger"
+local DebugLogger = require "lil.DebugLogger"
+
+local contains = function(subject, subString)
+    return string.find(subject, subString, 1, true)
+end
 
 local replacePatternIfPresent = function(subjectString, pattern, replacementOrReplacementGenerator, ...)
-    DebugLogger.log("replacing string if present with subjectString = '%s' and pattern = '%s' and replacementOrReplacementGenerator = '%s'", subjectString, pattern, replacementOrReplacementGenerator)
+    DebugLogger.log("replacing string if present with subjectString = '%s' and pattern = '%s' and replacementOrReplacementGenerator = '%s'", subjectString, pattern, tostring(replacementOrReplacementGenerator))
 
-    if not string.find(subjectString, pattern, 1, true) then
+    if not contains(subjectString, pattern)  then
         return subjectString
     end
 
@@ -32,7 +36,7 @@ local isString = function(subject)
 end
 
 local isBlank = function(subject)
-    DebugLogger.log("checking is blank with subject = '%s'", subject)
+    DebugLogger.log("checking is blank with subject = '%s'", tostring(subject))
 
     return type(subject) ~= "string" or trim(subject) == ""
 end
@@ -65,6 +69,7 @@ end
 
 return
 {
+    contains = contains,
     replacePatternIfPresent = replacePatternIfPresent,
     trim = trim,
     isString = isString,
