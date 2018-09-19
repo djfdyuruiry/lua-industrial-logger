@@ -2,7 +2,27 @@
 
 A pure lua logging framework that follows the conventions of popular frameworks like `logback`, `log4net` and `log4j`. Configuration uses a Lua based DSL for ease of use and flexibility.
 
-**Important: if you wish to rollover logs or compress old log files you will need certain utilities installed in your environment, see `rollingFile` in the `Config Reference` section below for more info**
+### Compatability
+
+LIL is designed to be compatible with Lua 5.1, 5.2 and 5.3. Basic features will work on any OS, but rolling over files and compressing backups have specific requirements, see below:
+
+----
+
+|   | Console Logging | Console Colours | File Logging | Rolling File Logging\*\* |
+| --- | --- | --- | --- | --- |
+| Linux / OSX | ✓ | ✓ | ✓ | ✓ |
+| Windows 7 + / Windows Server 2008 R2 + | ✓ | ✗ | ✓ | ✓ |
+| Windows 10 | ✓ | ✓ | ✓ | ✓ |
+
+*\*\*Extra components may be required to use all the features of Rolling File Logging:*
+
+|   | Copy Format Backups | ZIP Format Backups | TAR Format Backups |
+| --- | --- | --- | --- |
+| Linux / OSX | ✓ | ✓ (&#39;zip&#39; command must be in the path) | ✓ (&#39;tar&#39; command must be in the path) |
+| Windows 7 + / Windows Server 2008 R2 + | ✓ | ✓ (Powershell v5.0 must be installed) | ✗ |
+| Windows 10 | ✓ | ✓ | ✗ |
+
+----
 
 ### Quickstart
 
@@ -123,6 +143,7 @@ Below is the config DSL structure and available options:
 *Note the log levels mentioned above are available as globals in the config DSL*
 
 - `config`: root (syntax sugar)
+    - `useLfs`: set this to `"yes"` to use [LuaFileSystem](https://keplerproject.github.io/luafilesystem/) instead of shell commands (optional)
     - `pattern`: log pattern to use
     - `minLevel`: minimum log level to log
     - `maxLevel`: maximum log level to log
@@ -157,7 +178,7 @@ Below is the config DSL structure and available options:
             ```  
             - `logFilePath`: path to the log file
             - `createMissingDirectories`: boolean, create missing directories when creating the log file, defaults to false (optional)
-        - `rollingFile`: add a rolling file appender (*Note: On Windows, you will need Windows 7 or higher to use this*)
+        - `rollingFile`: add a rolling file appender (*Note: On Windows, you will need Windows 7 (or newer) OR Powershell v2 to use this*)
             ```lua
                 rollingFile "appenderName" {
                     -- config options
@@ -172,8 +193,8 @@ Below is the config DSL structure and available options:
                 - `maxFileSizeInKb`: the maximum size of the log file before rolling over
                 - `maxBackupFiles`: the maximum number of log backups to keep
                 - `backupFileFormat`: backup log files in this format ('copy', 'zip' or 'tar')
-                    - *On Windows: supported formats are 'copy' and 'zip' (note: zip format requires powershell v5 or newer to be installed)*
-                    - *On Unix: supported formats are 'copy', 'tar' and 'zip' (note: tar and zip formats require the tar and zip utils to be available in the path)*
+                    - *On Windows: supported formats are 'copy' and 'zip' (note: zip format requires Windows 10 OR Powershell v5 or newer to be installed)*
+                    - *On Unix: supported formats are 'copy', 'tar' and 'zip' (note: tar and zip formats require the tar and zip commands to be available in the path)*
         - `appender`: add a custom appender
             ```lua
                 appender("some.lua.Appender") "appenderName" {
