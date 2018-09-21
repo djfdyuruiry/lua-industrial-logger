@@ -1,19 +1,19 @@
 package = "lil"
 version = "scm-0"
 source = {
-    url = "git://github.com/djfdyuruiry/lua-industrual-logging.git",
+    url = "git://github.com/djfdyuruiry/lua-industrial-logger.git",
     tag = "master"
 }
 description = {
     summary = "A logging framework adding simple, powerful and reliable logs to any Lua application",
     detailed = [[
-        lua-industrual-logging
+        lua-industrial-logger
 
         A pure lua logging framework that follows the conventions of popular frameworks like logback, log4net and log4j.
         
         Logging configuration is declared using a Lua based DSL for ease of use and flexibility.
 
-        See: https://github.com/djfdyuruiry/lua-industrual-logging/blob/master/README.md
+        See: https://github.com/djfdyuruiry/lua-industrial-logger/blob/master/README.md
 
         Created by djfdyuruiry: https://github.com/djfdyuruiry
     ]],
