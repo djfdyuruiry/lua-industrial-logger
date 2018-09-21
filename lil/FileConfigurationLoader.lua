@@ -102,8 +102,7 @@ local loadConfigFromFile = function(postLoadConfigCallback)
 
     postLoadConfigCallback(fileConfig)
 
-    LoggerFactory.getLogger("FileConfigurationLoader")
-        .debug("Loaded logger configuration from file at path '%s':\n%s", configFilePath, configFileLua)
+    DebugLogger.log("Loaded logger configuration from file at path '%s':\n%s", configFilePath, configFileLua)
 end
 
 return

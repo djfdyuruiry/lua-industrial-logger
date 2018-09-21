@@ -106,7 +106,7 @@ local initConfigIfNeeded = function()
         return
     end
 
-    logger.debug("Loaded logger configuration from defaults")
+    DebugLogger.log("Loaded logger configuration from defaults")
 end
 
 local getConfig = function()

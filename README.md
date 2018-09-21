@@ -67,6 +67,8 @@ logger.info("I have printed out %d log messages", numLogMessages)
 
 Logger settings can be managed in a configuration file. The path for this file defaults to `logger.lua.config` in the current working directory, see `Environment Variables` if you want to set a custom path.
 
+Example config files can be found in the `config-examples` directory.
+
 If the file is not present, a default configuration is used:
 
 - Console appender with TRACE level and log pattern of `%{iso8601}d [%t] %l %n - %m`
@@ -92,7 +94,7 @@ See `Config Reference` below for all the options you can specify.
 This library uses environment variables to set global config values:
 
 - `LUA_LOG_CFG_FILE`: Custom path to a logger config file 
-- `LUA_LOG_DEBUG`: Set this to `true` to write verbose debug information to standard out
+- `LUA_LOG_DEBUG`: Set this to `true` to write verbose debug information to standard out (good for troubleshooting)
 
 ----
 
@@ -125,7 +127,7 @@ Supported pattern format specifiers:
     - format is `YYYY-MM-DDTHH:mm:ssZ` e.x. `2018-12-30T21:49:16`
 - `%m` - Log message
 
-**Levels** define the context of a log message, supported levels:
+**Levels** define the context of a log message, supported levels in descending order:
 
 - `TRACE`
 - `DEBUG`
@@ -289,7 +291,3 @@ config {
     }
 }
 ```
-
-**Custom Configuration Loader**
-
-Coming Soon!

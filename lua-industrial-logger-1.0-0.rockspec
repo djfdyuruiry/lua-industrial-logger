@@ -1,8 +1,8 @@
 package = "lil"
-version = "scm-0"
+version = "1.0-0"
 source = {
     url = "git://github.com/djfdyuruiry/lua-industrual-strength-logging.git",
-    tag = "master"
+    tag = "v1.0"
 }
 description = {
     summary = "A logging framework adding simple, powerful and reliable logs to any Lua application",
