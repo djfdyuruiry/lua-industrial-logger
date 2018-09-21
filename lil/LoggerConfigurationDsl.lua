@@ -97,6 +97,7 @@ local buildConfigUsingLoaderDsl = function(loaderFunction)
     local config = {}
     local dslEnv = {
         config = syntaxSugar,
+        useLfs = configPropertySetter(config, "useLfs"),
         pattern = configPropertySetter(config, "pattern"),
         minLevel = configPropertySetter(config, "minLevel"),
         maxLevel = configPropertySetter(config, "maxLevel"),

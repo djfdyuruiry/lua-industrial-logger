@@ -3,6 +3,7 @@ local loadstring = require "lil.polyfills.loadstring"
 local DebugLogger = require "lil.DebugLogger"
 local Levels = require "lil.Levels"
 local LoggerFactory = require "lil.LoggerFactory"
+local OsUtilsConfig = require "lil.OsUtilsConfig"
 local StringUtils = require "lil.StringUtils"
 
 local CONFIG_LOADER_ENV_VAR = "LUA_LOG_CFG_LOADER"
@@ -14,6 +15,10 @@ local loggerConfig = nil
 local setConfig = function(config)
     if not config then
         error("nil argument 'config' passed to setConfig")
+    end
+
+    if tostring(config.useLfs) == "yes" then
+        OsUtilsConfig.config = "LuaOsUtils"
     end
 
     local appenders = {}
@@ -101,7 +106,7 @@ local initConfigIfNeeded = function()
         return
     end
 
-    logger.debug("Loaded logger configuration from defaults")
+    DebugLogger.log("Loaded logger configuration from defaults")
 end
 
 local getConfig = function()
