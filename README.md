@@ -29,7 +29,7 @@ LIL is designed to be compatible with Lua 5.1, 5.2 and 5.3. Basic features will 
 Install using [luarocks](https://github.com/luarocks/luarocks/wiki/Download)
 
 ```shell
-luarocks install --server=http://luarocks.org/dev lil
+luarocks install lua-industrial-logger
 ```
 
 To use, import the module and create a new logger instance:
