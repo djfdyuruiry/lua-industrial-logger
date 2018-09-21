@@ -1,8 +1,8 @@
 package = "lua-industrial-logger"
-version = "1.0-0"
+version = "1.1-0"
 source = {
     url = "git://github.com/djfdyuruiry/lua-industrial-logger.git",
-    tag = "v1.0"
+    tag = "v1.1"
 }
 description = {
     summary = "A logging framework adding simple, powerful and reliable logs to any Lua application",
