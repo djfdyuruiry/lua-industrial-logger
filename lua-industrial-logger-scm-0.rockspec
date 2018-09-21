@@ -1,4 +1,4 @@
-package = "lil"
+package = "lua-industrial-logger"
 version = "scm-0"
 source = {
     url = "git://github.com/djfdyuruiry/lua-industrial-logger.git",
